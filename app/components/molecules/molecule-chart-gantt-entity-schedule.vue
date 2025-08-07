@@ -32,7 +32,6 @@
 
 <script setup lang="js">
 import { ref, computed, onMounted } from 'vue';
-import { getAllSchedulesByEntityId } from '~/services/schedules/service-schedule';
 import { transformScheduleData, validateGanttData } from '~/components/molecules/schedule-data-checker'
 
 const schedules = ref([]);
@@ -68,8 +67,11 @@ const getData = async () => {
     loading.value = true;
     error.value = null;
     
-    console.log('Fetching schedules from API...');
-    const response = await getAllSchedulesByEntityId();
+    const response = await apiServices.getAllSchedulesEntity({
+      params: {
+        schedule_type: "all"
+      }
+    });
         
     // Handle different response formats
     let rawData = [];

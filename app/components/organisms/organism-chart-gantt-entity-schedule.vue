@@ -39,7 +39,6 @@
 
 <script setup lang="js">
 import { ref } from 'vue';
-import { loadSchedule } from '~/services/schedules/service-schedule';
 
 const selectedSchedule = ref({});
 const popupViewScheduleOpen = ref(false);
@@ -52,7 +51,11 @@ const handleTaskClick = (data) => {
 
 const handleLoadTask = async () => {
     try {
-        const response = await loadSchedule(selectedSchedule.value.id);
+        const response = await apiServices.getLoadSchedule({
+            params: {
+                schedule_id: selectedSchedule.value.id
+            }
+        });
 
         console.log(response);
 

@@ -29,7 +29,7 @@ export const applyProcessEvent = async (reqBody) => {
   return data;
 };
 
-export const getProcessEventCapturedValues = async () => {
-  const data = await get(`${base_url}/captured-values/process`, );
+export const getProcessEventCapturedValues = async (selector) => {
+  const data = await get(`${base_url}/process/captured-values/${selector}`, );
   return data;
 };

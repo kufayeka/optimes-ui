@@ -1,4 +1,3 @@
-import { validateLoginCookie } from '~/services/accounts/service-account';
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const accountRoleReferenceId = {
@@ -18,8 +17,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   };
 
   try {
-    const response = await validateLoginCookie();
+    const headers = useRequestHeaders(['cookie']);
+    const cookies = headers.cookie || '';
 
+    const response = await apiServices.getAccountValidate({
+      headers: cookies
+      ? { cookie: cookies } 
+      : undefined,
+    });
+    
     const userRoleId = response.data.role;
     const targetRoute = roleRouteMap[userRoleId];
 

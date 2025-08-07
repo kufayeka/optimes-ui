@@ -1,5 +1,4 @@
 <template>
-    <h3>page 0</h3>
     <organisms-organism-form-login></organisms-organism-form-login>
 </template>
 
@@ -10,7 +9,7 @@ definePageMeta({
   description: 'Login page for the application',
   keywords: 'login, authentication, user access',
   icon: 'mdi-login',
-  layout: 'layout-logged-in',
+  layout: 'layout-logged-out',
   middleware: ['validate-cookie'],
 });
 

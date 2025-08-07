@@ -107,7 +107,6 @@
 
 <script setup lang="js">
 import { ref } from 'vue';
-import { validateLoginCookie, accountLogout, accountUpdate } from '~/services/accounts/service-account';
 
 const popupOpen = ref(false);
 const popupOpenEditAccount = ref(false);
@@ -149,7 +148,13 @@ watch(
 
 const getAccountData = async () => {
     try {
-        const response = await validateLoginCookie();
+        const headers = useRequestHeaders(['cookie']);
+        const cookies = headers.cookie || '';
+        const response = await apiServices.getAccountValidate({
+          headers: cookies
+          ? { cookie: cookies } 
+          : undefined,
+        });
 
         accountData.value = response.data;
 
@@ -174,7 +179,6 @@ const handleAccountUpdate = async () => {
   try {
     // Build request body
     const reqBody = {
-      id: editAccountForm.id,
       fullname: editAccountForm.fullname,
       role: editAccountForm.role,
       username: editAccountForm.username,
@@ -182,7 +186,12 @@ const handleAccountUpdate = async () => {
       status: editAccountForm.status
     };
 
-    const response = await accountUpdate(reqBody);
+    const response = await apiServices.putAccountUpdate({
+      body: reqBody,
+      params: {
+        accountId: editAccountForm.id
+      }
+    });
 
     if (response.success) {
       successMessage.value = 'Account updated successfully!';
@@ -200,7 +209,7 @@ const handleAccountUpdate = async () => {
 
 
 const handleLogout = () => {
-  accountLogout()
+  apiServices.postAccountLogout({})
     .then(() => {
       window.location.href = '/login';
     })

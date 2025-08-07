@@ -1,11 +1,16 @@
-import { validateLoginCookie } from "~/services/accounts/service-account";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const expectedRole = 'b2c8916e-9f9b-4d3d-8132-d397444ff17f'; // ppic role ID
 
 
   try {
-    const response = await validateLoginCookie();
+    const headers = useRequestHeaders(['cookie']);
+    const cookies = headers.cookie || '';
+    const response = await apiServices.getAccountValidate({
+      headers: cookies
+      ? { cookie: cookies } 
+      : undefined,
+    });
 
     if (!response.success) {
       console.warn('Login failed or cookie invalid');

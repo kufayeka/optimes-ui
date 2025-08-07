@@ -1,10 +1,16 @@
-import { validateLoginCookie } from "~/services/accounts/service-account";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const expectedRole = 'a8071b9d-3229-4354-805a-abb48f925f57'; // operator
 
   try {
-    const response = await validateLoginCookie();
+    const headers = useRequestHeaders(['cookie']);
+    const cookies = headers.cookie || '';
+
+    const response = await apiServices.getAccountValidate({
+      headers: cookies
+      ? { cookie: cookies } 
+      : undefined,
+    });
 
     if (!response.success) {
       console.warn('Login failed or cookie invalid');

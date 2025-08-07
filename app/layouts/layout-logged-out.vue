@@ -4,9 +4,12 @@
     <v-app-bar app color="primary" dark :elevation="2">
       <template v-slot:prepend>
         <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
+        <img src="/img/jvt_optimes.png" alt="optimes" class="w-70 h-50"/>
       </template>
 
-      <v-app-bar-title>OptiMES</v-app-bar-title>
+      <v-app-bar-title>
+        
+      </v-app-bar-title>
 
       <template v-slot:append>
         <p>Please Log In First...</p>

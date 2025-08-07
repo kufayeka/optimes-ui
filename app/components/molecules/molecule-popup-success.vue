@@ -1,7 +1,7 @@
 <template>
     <atoms-atom-base-popup
         :open="open"
-        :autoClose="true"
+        :autoClose="autoClose"
         :duration="duration"
         :maxWidth="maxWidth"
         @close="emit('close')"
@@ -33,6 +33,7 @@
 const props = defineProps({
   open: { type: Boolean, default: false },
   title: { type: String, default: 'Success' },
+  autoClose: { type: Boolean, default: false },
   duration: { type: Number, default: 500 },
   maxWidth: { type: [String, Number], default: 400 }
 });

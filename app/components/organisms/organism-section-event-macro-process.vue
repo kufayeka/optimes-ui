@@ -42,8 +42,6 @@
 
 <script setup lang="js">
 import { ref, onMounted } from 'vue';
-import { getAllMacroEventProcessReferences } from '~/services/data-reference/service-data-reference';
-import { createProcessEvent } from '~/services/events/service-events';
 
 const errorMessage = ref(null);
 const successMessage = ref(null);
@@ -52,7 +50,11 @@ const macroEventProcessReferences = ref([]);
 
 const handleGetMacroEventProcessReferences = async () => {
   try {
-    const response = await getAllMacroEventProcessReferences();
+    const response = await apiServices.getDataReferenceAll({
+      params: {
+        reference_category: "macro_event_process"
+      }
+    });
     macroEventProcessReferences.value = Array.isArray(response.data) ? response.data : [];
   } catch (err) {
     console.error('Error handleGetMacroEventProcessReferences:', err);
@@ -62,11 +64,13 @@ const handleGetMacroEventProcessReferences = async () => {
 
 const handleCreateProcessEvent = async (macro) => {
   try {
-    const response = await createProcessEvent({
+    const response = await apiServices.postEventProcessCreate({
+      body: {
         event_type: macro.id,
+        notes: "-",
         scrap_flag: false,
         supplementary_flag: false,
-        notes: '',
+      }
     });
 
     if(response.success){
@@ -75,7 +79,7 @@ const handleCreateProcessEvent = async (macro) => {
       errorMessage.value = response.data.message
     }
 } catch (err) {
-    errorMessage.value = true;
+    errorMessage.value = err;
     console.error('Error handleCreateProcessEvent:', err);
   }
 };

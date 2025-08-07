@@ -23,7 +23,6 @@
 
 <script setup lang="js">
 import { ref, onMounted, watch } from 'vue';
-import { getAllMachineReferences } from '~/services/data-reference/service-data-reference';
 
 // State
 const isLoading = ref(false);
@@ -70,8 +69,11 @@ const fetchData = async () => {
   isLoading.value = true;
   error.value = false;
   try {
-    const response = await getAllMachineReferences();
-    console.log(response);
+    const response = await apiServices.getDataReferenceAll({
+      params: {
+        reference_category: "machine"
+      }
+    });
     if (response.success) {
       apiData.value = response.data;
       // Set the first item as default if no modelValue is provided

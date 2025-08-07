@@ -54,7 +54,6 @@
 
 <script setup lang="js">
 import { reactive, ref } from 'vue';
-import { accountLogin } from '~/services/accounts/service-account';
 
 
 // Form state
@@ -122,7 +121,15 @@ const handleLogin = async () => {
   }
 
   try {
-    const response = await accountLogin(form);
+    const response = await apiServices.postAccountLogin({
+      body: {
+        username: form.username,
+        password: form.password,
+        role: form.role,
+        selectedEntityId: form.selectedEntityId,
+        selectedShiftId: form.selectedShiftId,
+      }
+    });
     console.log(response);
     if (response.success) {
       successMessage.value = 'Login Success';

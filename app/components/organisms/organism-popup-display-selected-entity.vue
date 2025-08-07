@@ -24,7 +24,6 @@
 
 <script setup lang="js">
 import { ref } from 'vue';
-import { getOneMachineReference } from '~/services/data-reference/service-data-reference';
 
 const popupOpen = ref(false);
 const entityData = ref(null);
@@ -32,7 +31,11 @@ const entityData = ref(null);
 
 const getSelectedEntity = async () => {
     try {
-        const response = await getOneMachineReference();
+        const response = await apiServices.getDataReferenceOne({
+            params: {
+                reference_category: "machine"
+            }
+        });
 
         entityData.value = response.data;
 

@@ -4,13 +4,17 @@
 
 <script setup lang="js">
 import { ref } from 'vue';
-import { getOneAccountRoleReferences } from '~/services/data-reference/service-data-reference';
+import { apiServices } from '#imports';
 
 const accountRole = ref('no-role');
 
 const getAccountRole = async () => {
     try {
-        const response = await getOneAccountRoleReferences();
+        const response = await apiServices.getDataReferenceOne({
+            params: {
+                reference_category: "account_role"
+            }
+        });
 
         accountRole.value = response.data.value;
 

@@ -45,7 +45,6 @@
 
 <script setup lang="js">
 import { ref, computed, onMounted } from 'vue';
-import { unloadSchedule, viewSchedule } from '~/services/schedules/service-schedule';
 
 const popupOpen = ref(false);
 const popupUnloadScheduleConfirmation = ref(false);
@@ -63,7 +62,7 @@ const loadedScheduleId = computed(() => {
 
 const handleViewSchedule = async () => {
     try {
-        const response = await viewSchedule();
+        const response = await apiServices.getLoadedScheduleData({});
         if (response && response.length > 0) {
             loadedSchedule.value = response[0];
         } else {
@@ -77,7 +76,7 @@ const handleViewSchedule = async () => {
 
 const handleUnloadSchedule = async () => {
     try {
-        const response = await unloadSchedule();
+        const response = await apiServices.getUnloadSchedule({});
         
         loadedSchedule.value = null;
         popupOpen.value = false;

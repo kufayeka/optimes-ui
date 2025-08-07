@@ -23,7 +23,6 @@
 
 <script setup lang="js">
 import { ref, onMounted, watch } from 'vue';
-import { getAllDowntimeSeverityReferences } from '~/services/data-reference/service-data-reference';
 
 // State
 const isLoading = ref(false);
@@ -70,7 +69,11 @@ const fetchData = async () => {
   isLoading.value = true;
   error.value = false;
   try {
-    const response = await getAllDowntimeSeverityReferences();
+    const response = await apiServices.getDataReferenceAll({
+      params: {
+        reference_category: "downtime_severity"
+      }
+    });
 
     if (response.success) {
       apiData.value = response.data;

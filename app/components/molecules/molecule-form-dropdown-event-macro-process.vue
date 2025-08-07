@@ -70,7 +70,11 @@ const fetchData = async () => {
   isLoading.value = true;
   error.value = false;
   try {
-    const response = await getAllMacroEventProcessReferences();
+    const response = await apiServices.getDataReferenceAll({
+      params: {
+        reference_category: "macro_event_process"
+      }
+    });
 
     if (response.success) {
       apiData.value = response.data;
