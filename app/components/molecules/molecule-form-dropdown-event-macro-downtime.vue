@@ -34,6 +34,8 @@ const selectedData = ref(null);
 // Generate unique ID for accessibility
 const inputId = `api-dropdown-${Math.random().toString(36).substr(2, 9)}`;
 
+
+
 // Props
 const props = defineProps({
   modelValue: {

@@ -13,6 +13,7 @@
             </template>
             <template #actions>
                 <v-btn variant="outlined" color="warning" @click="popupUnloadScheduleConfirmation = true">Unload</v-btn>
+                <v-btn variant="outlined" :disabled="loadedSchedule.schedule_category !== 'production'" color="success" @click="popupUnloadScheduleConfirmation = true">Complete</v-btn>
             </template>
         </molecules-molecule-popup-content-base>
     </molecules-molecule-popup-information>

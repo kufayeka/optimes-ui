@@ -9,7 +9,7 @@
       </template>
       <template v-slot:item="{ item }">
         <tr>
-          <td><atoms-atom-base-chip :color="item.event_type.color">{{ item.event_name }}</atoms-atom-base-chip></td>
+          <td><atoms-atom-base-chip variant="flat" :color="item.event_type.color">{{ item.event_name }}</atoms-atom-base-chip></td>
           <td>{{ formatDateTime(item.start_time) }}</td>
           <td>{{ formatDateTime(item.end_time) }}</td>
           <td class="d-flex flex-row">

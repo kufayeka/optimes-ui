@@ -196,6 +196,8 @@ const handleAccountUpdate = async () => {
     if (response.success) {
       successMessage.value = 'Account updated successfully!';
       errorMessage.value = null;
+
+      window.location.reload();
       return
     } else {
       errorMessage.value = response.message || 'Failed to update account.';

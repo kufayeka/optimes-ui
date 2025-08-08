@@ -251,7 +251,8 @@ class GanttChart {
             dayText.setAttribute('x', (xPos + opts.dayWidth / 2).toString());
             dayText.setAttribute('y', (opts.topHeaderHeight / 1.6).toString());
             dayText.setAttribute('fill', '#000');
-            dayText.setAttribute('font-size', '12');
+            dayText.setAttribute('font-size', '15');
+            dayText.setAttribute('font-weight', 'bold');
             dayText.setAttribute('text-anchor', 'middle');
             dayText.textContent = String(dayNum);
             this.svg.appendChild(dayText);
@@ -274,8 +275,8 @@ class GanttChart {
             colRect.setAttribute('height', gridHeight.toString());
             colRect.setAttribute('rx', '5');
             colRect.setAttribute('ry', '5');
-            colRect.setAttribute('fill', dayNum % 2 !== 0 ? '#474747' : '#3D3D3D');
-            colRect.setAttribute('stroke', '#cccccc');
+            colRect.setAttribute('fill', dayNum % 2 !== 0 ? 'white' : 'white');
+            colRect.setAttribute('stroke', 'black');
             colRect.setAttribute('stroke-width', '1');
             this.svg.appendChild(colRect);
         }
@@ -349,6 +350,18 @@ class GanttChart {
             catBox.setAttribute('stroke-width', '1');
             this.svg.appendChild(catBox);
 
+            const catBGBox = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            catBGBox.setAttribute('x', '120');
+            catBGBox.setAttribute('y', categoryTopY.toString());
+            catBGBox.setAttribute('width', totalChartWidth);
+            catBGBox.setAttribute('height', categoryHeight.toString());
+            catBGBox.setAttribute('fill', this.categoryBgColor[cat.category]);
+            catBGBox.setAttribute('stroke', '#999');
+            catBGBox.setAttribute('opacity', '0.7');
+            catBGBox.setAttribute('rx', '5');
+            catBGBox.setAttribute('stroke-width', '1');
+            this.svg.appendChild(catBGBox);
+
             // Divider line
             const yPos = categoryTopY + categoryHeight;
             const dividerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -367,7 +380,7 @@ class GanttChart {
             catLabel.setAttribute('x', labelX.toString());
             catLabel.setAttribute('y', labelY.toString());
             catLabel.setAttribute('fill', 'black');
-            catLabel.setAttribute('font-size', '14');
+            catLabel.setAttribute('font-size', '17');
             catLabel.setAttribute('font-weight', 'bold');
             catLabel.setAttribute('dominant-baseline', 'middle');
             catLabel.textContent = cat.category.charAt(0).toUpperCase() + cat.category.slice(1);
@@ -383,9 +396,11 @@ class GanttChart {
                 rect.setAttribute('x', xPos.toString());
                 rect.setAttribute('y', (yPosTask + 5).toString());
                 rect.setAttribute('width', t.width.toString());
-                rect.setAttribute('height', '30');
-                rect.setAttribute('fill', this.taskStatusColour[t.task.schedule_status]);
+                rect.setAttribute('height', '40');
+                // rect.setAttribute('fill', this.taskStatusColour[t.task.schedule_status]);
+                rect.setAttribute('fill', 'white');
                 rect.setAttribute('cursor', 'pointer');
+                rect.setAttribute('stroke', 'black');
                 rect.setAttribute('rx', '1');
                 rect.addEventListener('click', () => {
                     this.onTaskClick(t.task);
@@ -402,18 +417,18 @@ class GanttChart {
                 this.svg.appendChild(rect);
 
                 // Indicator status
-                const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                indicator.setAttribute('x', xPos.toString());
-                indicator.setAttribute('y', (yPosTask + 5).toString());
-                indicator.setAttribute('width', t.width.toString());
-                indicator.setAttribute('height', '5');
-                indicator.setAttribute('fill', this.taskColor[t.task.schedule_category]);
-                indicator.setAttribute('cursor', 'pointer');
-                indicator.setAttribute('rx', '1');
-                indicator.addEventListener('click', () => {
-                    this.onTaskClick(t.task);
-                });
-                this.svg.appendChild(indicator);
+                // const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                // indicator.setAttribute('x', xPos.toString());
+                // indicator.setAttribute('y', (yPosTask + 5).toString());
+                // indicator.setAttribute('width', t.width.toString());
+                // indicator.setAttribute('height', '5');
+                // indicator.setAttribute('fill', this.taskColor[t.task.schedule_category]);
+                // indicator.setAttribute('cursor', 'pointer');
+                // indicator.setAttribute('rx', '1');
+                // indicator.addEventListener('click', () => {
+                //     this.onTaskClick(t.task);
+                // });
+                // this.svg.appendChild(indicator);
 
                 // Target Entity label
                 const textTargetEntity = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -421,11 +436,8 @@ class GanttChart {
                 const textTargetEntityY = yPosTask + 40;
                 textTargetEntity.setAttribute('x', textTargetEntityX.toString());
                 textTargetEntity.setAttribute('y', textTargetEntityY.toString());
-                textTargetEntity.setAttribute('fill', '#ffffff');
-                textTargetEntity.setAttribute('stroke', 'black');
-                textTargetEntity.setAttribute('stroke-width', '2');
-                textTargetEntity.setAttribute('paint-order', 'stroke fill');
-                textTargetEntity.setAttribute('font-size', '10');
+                textTargetEntity.setAttribute('fill', 'black');
+                textTargetEntity.setAttribute('font-size', '15');
                 textTargetEntity.setAttribute('font-weight', 'bold');
                 textTargetEntity.setAttribute('text-anchor', 'middle');
                 textTargetEntity.setAttribute('cursor', 'pointer');
@@ -438,11 +450,8 @@ class GanttChart {
                 const textY = yPosTask + 25;
                 text.setAttribute('x', textX.toString());
                 text.setAttribute('y', textY.toString());
-                text.setAttribute('fill', '#ffffff');
-                text.setAttribute('stroke', 'black');
-                text.setAttribute('stroke-width', '2');
-                text.setAttribute('paint-order', 'stroke fill');
-                text.setAttribute('font-size', '12');
+                text.setAttribute('fill', 'black');
+                text.setAttribute('font-size', '15');
                 text.setAttribute('font-weight', 'bold');
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('cursor', 'pointer');

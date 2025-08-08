@@ -53,6 +53,31 @@ export const useEventHistoryProcess = () => {
         finally {}
     }
 
+
+    // const obj1 = {a:1,b:2}
+
+    // function isEven(x){
+    //     const result = x / 2;
+
+    //     if (result == 0) {
+    //         return true 
+    //     } else {
+    //         false
+    //     }
+    // }
+
+    // const res = isEven(a);
+    // console.log()
+
+
+    // R.ifElse(
+    //     R.prop('success'),
+    //     () => _set_success_msg('...'),
+    //     () => _set_error_msg('...')
+    // )(res)
+
+
+
     const _handle_end_event = async (event_data) => {
         try {
             const res = await apiServices.postEventProcessEnd({
@@ -113,6 +138,9 @@ export const useEventHistoryProcess = () => {
             _set_error_msg(`Error apply event: ${err.message}`)
         }
     }
+
+
+
 
 
   // --- Open edit popup handler ---

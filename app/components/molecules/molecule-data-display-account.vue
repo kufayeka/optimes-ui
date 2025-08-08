@@ -9,6 +9,7 @@
         </span>
     </atoms-atom-data-display-col>
     <atoms-atom-data-display-col title="Last Login" :value="formatDateTime(accountData.last_login)"/>
+    <atoms-atom-data-display-col title="Last Update" :value="formatDateTime(accountData.updated_at)"/>
 </template>
 
 <script setup lang="js">

@@ -27,6 +27,7 @@
           :selectedMonth="filterMonth"
           :selectedYear="filterYear"
           :dayWidth="50"
+          :alwaysRenderTaskOnANewRow="true"
           :onTaskClick="handleTaskClick"
           :forceRender="forceCounter"
         />

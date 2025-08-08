@@ -6,6 +6,7 @@ export const apiServices = {
   postEventProcessCreate: ({ body: { event_type, scrap_flag, supplementary_flag, notes }, ...options }) => post(`/event-process-create`, { event_type, scrap_flag, supplementary_flag, notes }, options),
   postEventProcessEnd: ({ params: { eventId }, ...options }) => post(`/event-process-end/${eventId}`, {}, options),
   putEventProcessUpdateAttributes: ({ body: { scrap_flag, supplementary_flag, notes }, params: { eventId }, ...options }) => put(`/event-process-update-attributes/${eventId}`, { scrap_flag, supplementary_flag, notes }, options),
+  postEventOperationalAccount: ({ body: { action, account, entity }, ...options }) => post(`/event-operational-account`, { action, account, entity }, options),
   getEventHistoryAll: ({ params: { event_type }, ...options }) => get(`/event-history-all/${event_type}`, options),
   getEventHistoryEntity: ({ params: { event_type }, ...options }) => get(`/event-history-entity/${event_type}`, options),
   getCapturedValues: ({ params: { capture_type }, ...options }) => get(`/captured-values/${capture_type}`, options),
