@@ -1,5 +1,6 @@
 <template>
     <v-data-table
+        density="compact"
         :headers="headers"
         :items="eventHistoryData"
         class=""
@@ -12,14 +13,14 @@
           <td><atoms-atom-base-chip variant="flat" :color="item.event_type.color">{{ item.event_name }}</atoms-atom-base-chip></td>
           <td>{{ formatDateTime(item.start_time) }}</td>
           <td>{{ formatDateTime(item.end_time) }}</td>
-          <td class="d-flex flex-row">
-            <v-btn class="ma-2" 
+          <td class="d-flex flex-row align-center justify-center">
+            <v-btn size="small" class="mx-1" 
                 :disabled="item.end_time" 
                 :color="item.end_time ? 'gray':'orange'"
                 @click="emit('endEvent', item)"
             >End</v-btn>
-              <v-btn small color="primary" class="ma-2" @click="emit('editEvent', item)">Edit</v-btn>
-              <v-btn small color="primary" class="ma-2" @click="emit('applyEvent', item)">Apply</v-btn>
+              <v-btn size="small" color="primary" class="mx-1" @click="emit('editEvent', item)">Edit</v-btn>
+              <v-btn size="small" color="primary" class="mx-1" @click="emit('applyEvent', item)">Apply</v-btn>
           </td>
         </tr>
       </template>

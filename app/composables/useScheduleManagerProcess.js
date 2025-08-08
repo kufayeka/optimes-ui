@@ -259,6 +259,12 @@ export const useScheduleManagerProcess = () => {
     R.tap(_open_view_popup)
   )
 
+    // --- Edit Schedule
+  const _open_edit_schedule = R.pipe(
+    _set_data_updated_schedule,
+    R.tap(_open_edit_popup)
+  )
+
   // --- Lifecycle
   onMounted(_handle_fetch_all)
 

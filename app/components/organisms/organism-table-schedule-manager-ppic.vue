@@ -1,15 +1,12 @@
 <template>
-  <v-row>
-    <v-col>
+  <molecules-molecule-form-section :title="'Schedule Manager'">
+    <template #endSection>
       <input
         type="file"
         accept=".xlsx, .xls"
         @change="handleFileChange"
         ref="fileInput"
       />
-    </v-col>
-
-    <v-col>
       <v-btn
         color="primary"
         @click="createSchedules"
@@ -17,46 +14,37 @@
       >
         Create Schedules
       </v-btn>
-    </v-col>
-
-    <v-col>
-      <v-btn
-        color="error"
-        @click="replaceSchedules"
-        :loading="isCreating"
-      >
-        Replace Schedules
-      </v-btn>
-    </v-col>
-  </v-row>
-
-  <!-- ✅ Tabel Schedule -->
-  <v-data-table
-    :headers="headers"
-    :items="_data_all_schedules"
-    :items-per-page="10"
-    class="mt-4"
-  >
-    <template v-slot:item="{ item }">
-      <tr>
-        <td>{{ item.schedule_data?.work_order_number }}</td>
-        <td>{{ item.schedule_data?.shift }}</td>
-        <td>{{ item.schedule_data?.material }}</td>
-        <td>{{ item.schedule_data?.routing_name?.title }}</td>
-        <td>{{ item.schedule_data?.quantity_order }} {{ item.schedule_data?.quantity_unit }}</td>
-        <td>{{ formatDateTime(item.planned_start_time) }}</td>
-        <td>{{ formatDateTime(item.planned_finish_time) }}</td>
-        <td>
-          <v-btn>Edit</v-btn>
-          <v-btn>Remove</v-btn>
-        </td>
-      </tr>
+      <v-btn variant="outlined" color="primary" @click="_handle_fetch_all">Refresh</v-btn>
     </template>
-  </v-data-table>
+    <molecules-molecule-table-schedule
+      class="mt-4"
+      :schedule-data="_data_all_schedules"
+      @edit="_open_edit_schedule"
+      @view="_open_view_schedule"
+    />
+  </molecules-molecule-form-section>
+
+  <molecules-molecule-popup-information
+      :title="'View Schedule'"
+      :open="_toggle_popup_schedule_view"
+      @close="_close_view_popup"
+      maxWidth="700"
+  >
+    <molecules-molecule-popup-content-base>
+        <template #content>
+            <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+                <molecules-molecule-data-display-schedule :schedule-data="_data_selected_schedule"/>
+            </atoms-atom-base-wrapper>
+        </template>
+        <template #actions>
+        </template>
+    </molecules-molecule-popup-content-base>
+  </molecules-molecule-popup-information>
+
 
   <!-- ✅ Message Popups -->
   <molecules-molecule-popup-error
-    :autoClose="false"
+    :autoClose="false" 
     :open="_data_error_message"
     :title="'Error'"
     @close="_close_error"
@@ -86,11 +74,16 @@ import { useScheduleManagerProcess } from '@/composables/useScheduleManagerProce
 const {
   _data_success_message,
   _data_error_message,
+  _set_data_selected_schedule,
+  _data_selected_schedule,
+  _close_edit_popup,
+  _close_view_popup,
   _close_success,
   _close_error,
+  _open_view_schedule,
   handleFileUpload,
   createSchedules,
-  replaceSchedules,
+  _toggle_popup_schedule_view,
   isCreating,
   _data_all_schedules
 } = useScheduleManagerProcess()

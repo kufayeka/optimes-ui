@@ -43,8 +43,8 @@ class GanttChart {
         };
         // Warna dasar
         this.categoryBgColor = {
-            production: '#00CC00',
-            maintenance: '#e5e322',
+            production: '#76FF03',
+            maintenance: '#FFEA00',
             other: '#B3B3B3'
         };
         this.taskColor = {
@@ -222,16 +222,19 @@ class GanttChart {
         return { startFraction, endFraction };
     }
 
+    
+
     /**
      * Render header hari.
      */
     renderDayHeader(daysInMonth, totalChartWidth, opts) {
+
         const headerRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         headerRect.setAttribute('x', '0');
         headerRect.setAttribute('y', '0');
         headerRect.setAttribute('width', totalChartWidth.toString());
         headerRect.setAttribute('height', opts.topHeaderHeight.toString());
-        headerRect.setAttribute('fill', '#EEEEEE');
+        headerRect.setAttribute('fill', '#e3e3e3');
         headerRect.setAttribute('stroke', '#CCC');
         this.svg.appendChild(headerRect);
 
@@ -294,8 +297,8 @@ class GanttChart {
             hLine.setAttribute('y1', yPos.toString());
             hLine.setAttribute('x2', totalChartWidth.toString());
             hLine.setAttribute('y2', yPos.toString());
-            hLine.setAttribute('stroke', '#ccc');
-            hLine.setAttribute('stroke-width', '1');
+            hLine.setAttribute('stroke', 'black');
+            hLine.setAttribute('stroke-width', '0.3');
             this.svg.appendChild(hLine);
         }
     }
@@ -332,7 +335,22 @@ class GanttChart {
      * Render kategori dan task di dalam chart.
      */
     renderCategoriesAndTasks(catData, daysInMonth, totalChartWidth, opts) {
+        // Label Date
+        const labelX = 10;
+        const labelY = opts.topHeaderHeight/2;
+        const dateLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        dateLabel.setAttribute('x', labelX.toString());
+        dateLabel.setAttribute('y', labelY.toString());
+        dateLabel.setAttribute('fill', 'black');
+        dateLabel.setAttribute('font-size', '17');
+        dateLabel.setAttribute('font-weight', 'bold');
+        dateLabel.setAttribute('dominant-baseline', 'middle');
+        dateLabel.textContent = "Date";
+        this.svg.appendChild(dateLabel);
+
+
         let currentRowOffset = 0;
+
         catData.forEach(cat => {
             const catRows = Math.max(1, cat.totalRows);
             const categoryHeight = catRows * opts.rowHeight;
@@ -357,7 +375,7 @@ class GanttChart {
             catBGBox.setAttribute('height', categoryHeight.toString());
             catBGBox.setAttribute('fill', this.categoryBgColor[cat.category]);
             catBGBox.setAttribute('stroke', '#999');
-            catBGBox.setAttribute('opacity', '0.7');
+            catBGBox.setAttribute('opacity', '0.5');
             catBGBox.setAttribute('rx', '5');
             catBGBox.setAttribute('stroke-width', '1');
             this.svg.appendChild(catBGBox);
@@ -401,7 +419,8 @@ class GanttChart {
                 rect.setAttribute('fill', 'white');
                 rect.setAttribute('cursor', 'pointer');
                 rect.setAttribute('stroke', 'black');
-                rect.setAttribute('rx', '1');
+                rect.setAttribute('stroke-width', '0.5');
+                rect.setAttribute('rx', '5');
                 rect.addEventListener('click', () => {
                     this.onTaskClick(t.task);
                 });
@@ -450,9 +469,10 @@ class GanttChart {
                 const textY = yPosTask + 25;
                 text.setAttribute('x', textX.toString());
                 text.setAttribute('y', textY.toString());
-                text.setAttribute('fill', 'black');
-                text.setAttribute('font-size', '15');
-                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('fill', 'white');
+                text.setAttribute('font-size', '18');
+                text.setAttribute('stroke', 'black');
+                text.setAttribute('stroke-width', '1');
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('cursor', 'pointer');
                 text.textContent = t.task.schedule_name;

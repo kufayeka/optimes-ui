@@ -11,7 +11,7 @@
         maxWidth="400"
       >
         <atoms-atom-base-wrapper width="400px" height="100px" maxWidth="100%" maxHeight="400px">
-            <atoms-atom-base-label>{{ errorMessage }}</atoms-atom-base-label>
+            <pre>{{ errorMessage }}</pre>
         </atoms-atom-base-wrapper>
       </molecules-molecule-popup-error>
 

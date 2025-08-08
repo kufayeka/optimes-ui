@@ -3,9 +3,11 @@
     <div class="filter-info" v-if="selectedMonth && selectedYear">
       <p>Showing tasks for: {{ getMonthName(selectedMonth) }} {{ selectedYear }} | Total tasks: {{ filteredTasks.length }} (from {{ props.tasks.length }} total)</p>
     </div>
-    <div class="svg-container" v-if="selectedMonth && selectedYear">
-      <svg :id="chartId" preserveAspectRatio="xMinYMin meet"></svg>
-    </div>
+    <atoms-atom-base-wrapper max-height="500px">
+      <div class="svg-container" v-if="selectedMonth && selectedYear">
+        <svg :id="chartId" preserveAspectRatio="xMinYMin meet"></svg>
+      </div>
+    </atoms-atom-base-wrapper>
   </div>
 </template>
 

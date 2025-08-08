@@ -31,6 +31,7 @@
           :onTaskClick="handleTaskClick"
           :forceRender="forceCounter"
         />
+
       </v-sheet>
     </div>
   </div>
