@@ -9,6 +9,7 @@
         <molecules-molecule-popup-content-base>
             <template #content>
                 <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+                    {{ selectedSchedule }}
                     <molecules-molecule-data-display-schedule :schedule-data="selectedSchedule"/>
                 </atoms-atom-base-wrapper>
             </template>
@@ -56,8 +57,6 @@ const handleLoadTask = async () => {
                 schedule_id: selectedSchedule.value.id
             }
         });
-
-        console.log(response);
 
         popupViewScheduleOpen.value = false;
         popupLoadSchedulConfirmationOpen.value = false;

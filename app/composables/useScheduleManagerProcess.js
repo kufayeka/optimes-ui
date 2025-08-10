@@ -15,12 +15,10 @@ export const useScheduleManagerProcess = () => {
   const isCreating = ref(false)
 
   const _toggle_popup_schedule_edit = ref(false)
-  const _toggle_popup_schedule_view = ref(false)
+  const _toggle_popup_schedule_view = ref(false) 
 
   // --- Data Handlers ---
-  const _set_data_all_schedules = R.tap((data) =>
-    (_data_all_schedules.value = R.defaultTo([], data))
-  )
+  const _set_data_all_schedules = R.tap((data) => (_data_all_schedules.value = R.defaultTo([], data)))
   const _set_data_selected_schedule = R.tap((data) =>
     (_data_selected_schedule.value = R.defaultTo({}, data))
   )

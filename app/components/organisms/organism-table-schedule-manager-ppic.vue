@@ -1,125 +1,168 @@
 <template>
   <molecules-molecule-form-section :title="'Schedule Manager'">
     <template #endSection>
-      <input
-        type="file"
-        accept=".xlsx, .xls"
-        @change="handleFileChange"
-        ref="fileInput"
-      />
-      <v-btn
-        color="primary"
-        @click="createSchedules"
-        :loading="isCreating"
-      >
-        Create Schedules
-      </v-btn>
-      <v-btn variant="outlined" color="primary" @click="_handle_fetch_all">Refresh</v-btn>
+      <div class="d-flex flex-row ga-3 justify-space-evenly">
+        <v-btn variant="outlined" color="primary" @click="">Upload Schedule</v-btn>
+        <v-btn variant="outlined" color="primary" @click="open_popup_schedule_create">Create</v-btn>
+        <v-btn variant="outlined" color="primary" @click="">Refresh</v-btn>
+      </div>
     </template>
-    <molecules-molecule-table-schedule
-      class="mt-4"
-      :schedule-data="_data_all_schedules"
-      @edit="_open_edit_schedule"
-      @view="_open_view_schedule"
-    />
-  </molecules-molecule-form-section>
-
-  <molecules-molecule-popup-information
-      :title="'View Schedule'"
-      :open="_toggle_popup_schedule_view"
-      @close="_close_view_popup"
-      maxWidth="700"
-  >
-    <molecules-molecule-popup-content-base>
+    {{  _data_all_schedule }}
+    <!-- TABLE: SCHEDULE TABLE -->
+    <molecules-molecule-table-schedule class="mt-4" :schedule-data="_data_all_schedule" @edit="open_popup_schedule_edit" @view="open_popup_schedule_view" @delete="" />
+    <!-- POPUP: VIEW SCHEDULE -->
+    <molecules-molecule-popup-information :title="'Schedule View'" max-width="800" :open="_state_popup_schedule_view" @close="close_popup_schedule_view">
+      <molecules-molecule-popup-content-base>
         <template #content>
-            <atoms-atom-base-wrapper max-width="100%" max-height="400px">
-                <molecules-molecule-data-display-schedule :schedule-data="_data_selected_schedule"/>
-            </atoms-atom-base-wrapper>
+          <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+            <molecules-molecule-data-display-schedule :schedule-data="_data_selected_schedule"/>
+          </atoms-atom-base-wrapper>
+        </template>
+      </molecules-molecule-popup-content-base>
+    </molecules-molecule-popup-information>
+    <!-- POPUP: EDIT SCHEDULE -->
+    <molecules-molecule-popup-edit :title="'Edit Schedule'" max-width="700" :open="_state_popup_schedule_edit" @close="close_popup_schedule_edit">
+      <molecules-molecule-popup-content-base>
+        <template #content>
+          <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+            <molecules-molecule-form-edit-generic :form-initial-data="_data_selected_schedule" :form-template="edit_form_template" v-model:formUpdatedData="_data_modified_schedule"/>
+          </atoms-atom-base-wrapper>
         </template>
         <template #actions>
+          <molecules-molecule-group-button-save-discard @save="open_popup_schedule_edit_confirmation" @discard="close_popup_schedule_edit"/>
         </template>
-    </molecules-molecule-popup-content-base>
-  </molecules-molecule-popup-information>
+      </molecules-molecule-popup-content-base>
+    </molecules-molecule-popup-edit>
+    <!-- POPUP: EDIT CONFIRMATION -->
+    <molecules-molecule-popup-confirmation :title="'Edit Confirmation'" :open="_state_popup_schedule_edit_confirmation" @close="close_popup_schedule_edit_confirmation" maxWidth="500">
+      <molecules-molecule-popup-content-base>
+        <template #content>
+            <atoms-atom-base-label>Are you sure you want to modify this schedule?</atoms-atom-base-label>
+        </template>
+        <template #actions>
+            <molecules-molecule-group-button-yes-no @yes="pipe_execute_edit_schedule" @no="close_popup_schedule_edit_confirmation"/>
+        </template>
+      </molecules-molecule-popup-content-base>
+    </molecules-molecule-popup-confirmation>
+    <!-- POPUP: CREATE SCHEDULE -->
+    <molecules-molecule-popup-edit :title="'Create Schedule'" max-width="700" :open="_state_popup_schedule_create" @close="close_popup_schedule_create">
+      <molecules-molecule-popup-content-base>
+        <template #content>
+          <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+            <molecules-molecule-form-create-generic :form-template="create_form_template" :initial-data="create_form_initial_data" v-model:formData="_data_created_schedule" />
+          </atoms-atom-base-wrapper>
+        </template>
+        <template #actions>
+          <molecules-molecule-group-button-save-discard @save="open_popup_schedule_create_confirmation" @discard="close_popup_schedule_create"/>
+        </template>
+      </molecules-molecule-popup-content-base>
+    </molecules-molecule-popup-edit>
+    <!-- POPUP: CREATE CONFIRMATION -->
+    <molecules-molecule-popup-confirmation :title="'Create Confirmation'" :open="_state_popup_schedule_create_confirmation" @close="close_popup_schedule_create_confirmation" maxWidth="500">
+      <molecules-molecule-popup-content-base>
+        <template #content>
+            <atoms-atom-base-label>Are you sure you want to create this schedule?</atoms-atom-base-label>
+        </template>
+        <template #actions>
+            <molecules-molecule-group-button-yes-no @yes="pipe_execute_create_schedule" @no="close_popup_schedule_create_confirmation"/>
+        </template>
+      </molecules-molecule-popup-content-base>
+    </molecules-molecule-popup-confirmation>
 
-
-  <!-- ✅ Message Popups -->
-  <molecules-molecule-popup-error
-    :autoClose="false" 
-    :open="_data_error_message"
-    :title="'Error'"
-    @close="_close_error"
-    maxWidth="400"
-  >
-    <atoms-atom-base-wrapper width="400px" height="50px" maxWidth="100%" maxHeight="50px">
-      <atoms-atom-base-label>{{ _data_error_message }}</atoms-atom-base-label>
-    </atoms-atom-base-wrapper>
-  </molecules-molecule-popup-error>
-
-  <molecules-molecule-popup-success
-    :open="_data_success_message"
-    :autoClose="false"
-    :title="'Success'"
-    @close="_close_success"
-    maxWidth="400"
-  >
-    <atoms-atom-base-wrapper width="400px" height="50px" maxWidth="100%" maxHeight="50px">
-      <atoms-atom-base-label>{{ _data_success_message }}</atoms-atom-base-label>
-    </atoms-atom-base-wrapper>
-  </molecules-molecule-popup-success>
+</molecules-molecule-form-section>
 </template>
 
 <script setup>
-import { useScheduleManagerProcess } from '@/composables/useScheduleManagerProcess'
+import { computed } from 'vue';
+import { useScheduleProcess } from '@/composables/use-schedule-process';
+import { useDataReferences } from '@/composables/use-data-references';
+
 
 const {
-  _data_success_message,
-  _data_error_message,
-  _set_data_selected_schedule,
+  _data_all_machine,
+  _data_all_shift,
+} = useDataReferences();
+
+const {
+  _data_all_schedule,
   _data_selected_schedule,
-  _close_edit_popup,
-  _close_view_popup,
-  _close_success,
-  _close_error,
-  _open_view_schedule,
-  handleFileUpload,
-  createSchedules,
-  _toggle_popup_schedule_view,
-  isCreating,
-  _data_all_schedules
-} = useScheduleManagerProcess()
+  _data_modified_schedule,
+  _data_success_msg,
+  _data_error_msg,
+  _data_created_schedule,
+  _data_uploaded_schedule,
 
-const handleFileChange = (event) => {
-  const files = event.target.files
-  if (files && files.length > 0) {
-    handleFileUpload(files[0])
-  }
-}
+  _state_popup_error,
+  _state_popup_success,
+  _state_popup_schedule_view,
+  _state_popup_schedule_edit,
+  _state_popup_schedule_create,
+  _state_popup_schedule_delete,
+  _state_popup_schedule_create_confirmation,
+  _state_popup_schedule_delete_confirmation,
+  _state_popup_schedule_edit_confirmation,
 
-// ✅ Header untuk table schedule
-const headers = [
-  { title: 'Work Order', key: 'work_order' },
-  { title: 'Shift', key: 'shift' },
-  { title: 'Material', key: 'material' },
-  { title: 'Routing', key: 'routing' },
-  { title: 'Quantity', key: 'quantity' },
-  { title: 'Start Time', key: 'start_time' },
-  { title: 'End Time', key: 'end_time' },
-]
+  open_popup_schedule_view,
+  close_popup_schedule_view,
+  open_popup_schedule_edit,
+  close_popup_schedule_edit,
+  open_popup_schedule_create,
+  close_popup_schedule_create,
+  open_popup_schedule_edit_confirmation,
+  close_popup_schedule_edit_confirmation,
+  open_popup_schedule_create_confirmation,
+  close_popup_schedule_create_confirmation,
+  open_popup_schedule_delete_confirmation,
+  close_popup_schedule_delete_confirmation,
 
-// ✅ Format tanggal
-const formatDateTime = (dateTime) => {
-  if (!dateTime) return '-';
-  try {
-    return new Date(dateTime).toLocaleString('id-ID', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  } catch (error) {
-    return dateTime;
-  }
-}
+  pipe_execute_edit_schedule,
+  pipe_execute_create_schedule,
+
+} = useScheduleProcess();
+
+
+const edit_form_template = computed(() => [
+  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: _data_all_shift.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true },
+  { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true },
+  { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true },
+  { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true },
+  { key: 'schedule_data.material', label: 'Material', type: 'text', required: true },
+  { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', required: true, max: 9999999, min: 0 },
+  { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true },
+  { key: 'notes', label: 'Notes', type: 'textarea', required: false },
+]);
+
+
+const create_form_template = computed(() => [
+  { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true },
+  { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true },
+  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: _data_all_shift.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true },
+  { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true },
+  { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'schedule_data.material', label: 'Material', type: 'text', required: true },
+  { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', min: 0, max: 9999999, required: true },
+  { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true },
+  { key: 'notes', label: 'Notes', type: 'textarea', required: false },
+]);
+
+const create_form_initial_data = {
+  schedule_data: {
+    work_order_number: '',
+    sales_order_number: '',
+    shift: '', 
+    routing: '', 
+    material: '',
+    quantity_order: 0,
+    quantity_unit: '',
+  },
+  schedule_category: 'production',
+  planned_start_time: '',  
+  planned_finish_time: '',
+  notes: '',
+};
+
+
 </script>

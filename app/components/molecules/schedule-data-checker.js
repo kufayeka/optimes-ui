@@ -40,9 +40,9 @@ export function transformScheduleData(apiData) {
       schedule_data: {
         ...item.schedule_data,
         // Flatten routing_name if it's an object
-        routing_name: typeof item.schedule_data?.routing_name === 'object' 
-          ? item.schedule_data.routing_name.title || item.schedule_data.routing_name.value
-          : item.schedule_data?.routing_name
+        // routing_name: typeof item.schedule_data?.routing_name === 'object' 
+        //   ? item.schedule_data.routing_name.title || item.schedule_data.routing_name.value
+        //   : item.schedule_data?.routing_name
       },
       
       // Keep other original fields

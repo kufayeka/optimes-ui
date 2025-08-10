@@ -5,10 +5,19 @@
         <span>
             <atoms-atom-base-chip>{{ scheduleData?.schedule_status || '-' }}</atoms-atom-base-chip>
         </span>
+        <span>
+            <atoms-atom-base-chip>{{ scheduleData?.schedule_data.routing_name.title || '-' }}</atoms-atom-base-chip>
+        </span>
+        <span>
+            <atoms-atom-base-chip>{{ scheduleData?.schedule_data.shift_name.title || '-' }}</atoms-atom-base-chip>
+        </span>
     </atoms-atom-data-display-col>
     <atoms-atom-data-display-col title="Planned Start Time" :value="formatDateTime(scheduleData?.planned_start_time)"/>
     <atoms-atom-data-display-col title="Planned Finish Time" :value="formatDateTime(scheduleData?.planned_finish_time)"/>
+    <atoms-atom-data-display-col title="Actual Start Time" :value="formatDateTime(scheduleData?.actual_start_time)"/>
+    <atoms-atom-data-display-col title="Actual Finish Time" :value="formatDateTime(scheduleData?.actual_finish_time)"/>
     <atoms-atom-data-display-col title="Schedule Data" :value="scheduleData?.schedule_data"/>
+    <atoms-atom-data-display-col title="Notes" :value="scheduleData?.notes"/>
     <atoms-atom-data-display-col title="Created On" :value="formatDateTime(scheduleData?.created_at)"/>
     <atoms-atom-data-display-col title="Updated On" :value="formatDateTime(scheduleData?.updated_at)"/>
 </template>
