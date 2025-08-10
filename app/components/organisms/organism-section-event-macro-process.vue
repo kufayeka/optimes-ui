@@ -32,6 +32,7 @@
           :title="'Success'"
           @close="successMessage = false"
           maxWidth="400"
+          autoClose="true"
     >
         <atoms-atom-base-wrapper width="400px" height="50px" maxWidth="100%" maxHeight="50px">
             <atoms-atom-base-label>{{ successMessage }}</atoms-atom-base-label>

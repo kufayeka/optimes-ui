@@ -6,10 +6,10 @@
             <atoms-atom-base-chip>{{ scheduleData?.schedule_status || '-' }}</atoms-atom-base-chip>
         </span>
         <span>
-            <atoms-atom-base-chip>{{ scheduleData?.schedule_data.routing_name.title || '-' }}</atoms-atom-base-chip>
+            <atoms-atom-base-chip>{{ scheduleData?.schedule_data?.routing_name.title || '-' }}</atoms-atom-base-chip>
         </span>
         <span>
-            <atoms-atom-base-chip>{{ scheduleData?.schedule_data.shift_name.title || '-' }}</atoms-atom-base-chip>
+            <atoms-atom-base-chip>{{ scheduleData?.schedule_data?.shift_name.title || '-' }}</atoms-atom-base-chip>
         </span>
     </atoms-atom-data-display-col>
     <atoms-atom-data-display-col title="Planned Start Time" :value="formatDateTime(scheduleData?.planned_start_time)"/>

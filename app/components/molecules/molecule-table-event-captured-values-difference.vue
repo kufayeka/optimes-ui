@@ -1,11 +1,28 @@
 <template>
-  <p>difference</p>
-  <v-btn @click="getData">refresh</v-btn>
-  <pre>{{ eventCapturedValuesData?.captured_values_difference }}</pre>
+  <atoms-atom-data-display-col title="Unwind Paper Length" class="d-flex gap-2">
+    <atoms-atom-base-chip size="large" color="primary">
+      <atoms-atom-base-label-xxl>
+        {{ formatNumber(cm) }} cm
+      </atoms-atom-base-label-xxl>
+    </atoms-atom-base-chip>
+
+    <atoms-atom-base-chip size="large" color="secondary">
+      <atoms-atom-base-label-xxl>
+        {{ formatNumber(meter) }} m
+      </atoms-atom-base-label-xxl>
+    </atoms-atom-base-chip>
+
+    <atoms-atom-base-chip size="large" color="success">
+      <atoms-atom-base-label-xxl>
+        {{ formatNumber(inch) }} inch
+      </atoms-atom-base-label-xxl>
+    </atoms-atom-base-chip>
+  </atoms-atom-data-display-col>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { apiServices } from '@/composables/optimesHttpClient';
 
 const eventCapturedValuesData = ref(null);
 
@@ -22,18 +39,19 @@ const getData = async () => {
   }
 };
 
-const formatDate = (iso) => {
-  return new Date(iso).toLocaleString('id-ID', {
-    hour12: false,
-    dateStyle: 'short',
-    timeStyle: 'medium',
-  });
+const formatNumber = (num) => {
+  if (typeof num !== 'number' || isNaN(num)) return '-';
+  return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
 };
+
+const cm = computed(() => eventCapturedValuesData.value?.captured_values_difference?.raw_paper_roll_length ?? 0);
+const meter = computed(() => cm.value / 100);
+const inch = computed(() => cm.value / 2.54);
 
 let intervalId = null;
 onMounted(() => {
-  //getData(); 
-  //intervalId = setInterval(getData, 1000);
+  getData();
+  intervalId = setInterval(getData, 1000);
 });
 
 onUnmounted(() => {
@@ -43,3 +61,11 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.d-flex {
+  display: flex;
+  gap: 12px;
+  /* supaya chipnya rapih berdampingan */
+}
+</style>

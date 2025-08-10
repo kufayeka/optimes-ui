@@ -74,7 +74,7 @@
       </label>
     </div>
 
-    <pre>Current Data: {{ formData }}</pre>
+    <pre v-if="debug">Current Data: {{ formData }}</pre>
   </div>
 </template>
 
@@ -83,6 +83,7 @@ import { reactive, toRefs } from 'vue';
 import { get, set, cloneDeep } from 'lodash-es';
 
 const props = defineProps({
+  debug: { type: Boolean, default: false },
   formTemplate: { type: Array, required: true },
   initialData: { type: Object, default: () => ({}) }
 });

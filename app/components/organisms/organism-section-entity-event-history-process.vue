@@ -52,6 +52,7 @@
     :open="_success_message"
     :title="'Success'"
     @close="_close_success"
+    auto-close="true"
     maxWidth="400"
   >
     <atoms-atom-base-wrapper width="400px" height="50px" maxWidth="100%" maxHeight="50px">

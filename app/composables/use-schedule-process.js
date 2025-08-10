@@ -95,6 +95,7 @@ export const useScheduleProcess = () => {
         R.pipe(
             extract_data,
             set_array(_data_all_schedule),
+            () => set_string(_data_success_msg, 'Schedule refreshed.'),
             () => set_ref(_state_popup_success, true)
         ),
         R.pipe(
@@ -109,6 +110,7 @@ export const useScheduleProcess = () => {
         pipe_process_api_response(
         R.pipe(
             () => set_ref(_state_popup_success, true),
+            () => set_string(_data_success_msg, 'Edit schedule success.'),
             () => api_get_all_schedule()
         ),
         R.pipe(
@@ -121,13 +123,14 @@ export const useScheduleProcess = () => {
             params: { schedule_id: data.id },
             body: data,
         })
-        )();
+    )();
 
     // --- API: Execute Edit Schedule
     const api_create_schedule = (data) =>
         pipe_process_api_response(
         R.pipe(
             () => set_ref(_state_popup_success, true),
+            () => set_string(_data_success_msg, 'Schedule created.'),
             () => api_get_all_schedule()
         ),
         R.pipe(
@@ -139,7 +142,21 @@ export const useScheduleProcess = () => {
         apiServices.postCreateScheduleData({
             body: data,
         })
-        )();
+    )();
+
+    // --- API: Execute delete Schedule
+    const api_delete_schedule = (data) => pipe_process_api_response(
+        R.pipe(
+            () => set_string(_data_success_msg, 'Schedule deleted.'),
+            () => set_ref(_state_popup_success, true),
+            () => api_get_all_schedule()
+        ),
+        R.pipe(
+            extract_error_data,
+            set_string(_data_error_msg),
+            () => set_ref(_state_popup_error, true)
+        )
+    )(() => apiServices.deleteDeleteScheduleData({ params: { schedule_id: data.id } }))();
 
     // --- PIPE: Action edit Schedule
     const pipe_execute_edit_schedule = () => {
@@ -152,7 +169,19 @@ export const useScheduleProcess = () => {
     const pipe_execute_create_schedule = () => {
         api_create_schedule(_data_created_schedule.value);
         close_popup_schedule_create_confirmation();
-        close_popup_schedule_create()
+        close_popup_schedule_create();
+    };
+
+    // --- PIPE: Action delete schedule
+    const pipe_execute_delete_schedule = () => {
+        api_delete_schedule(_data_selected_schedule.value);
+        close_popup_schedule_view();
+        close_popup_schedule_delete_confirmation();
+    };
+
+    // --- PIPE: Action refresh schedule
+    const pipe_execute_refresh_schedule = () => {
+        api_get_all_schedule();
     };
 
     // --- Lifecycle
@@ -194,5 +223,7 @@ export const useScheduleProcess = () => {
 
         pipe_execute_edit_schedule,
         pipe_execute_create_schedule,
+        pipe_execute_refresh_schedule,
+        pipe_execute_delete_schedule,
     };
 };

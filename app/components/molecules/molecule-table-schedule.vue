@@ -21,7 +21,6 @@
             <td class="d-flex flex-row align-center justify-center">
                 <v-btn size="small" class="mx-1" color="warning" @click="emit('edit', item)">Edit</v-btn>
                 <v-btn size="small" class="mx-1" color="primary" @click="emit('view', item)">View</v-btn>
-                <v-btn size="small" class="mx-1" color="red" @click="emit('delete', item)">Delete</v-btn>
             </td>
         </tr>
       </template>

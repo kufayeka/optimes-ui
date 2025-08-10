@@ -4,12 +4,23 @@
       <div class="d-flex flex-row ga-3 justify-space-evenly">
         <v-btn variant="outlined" color="primary" @click="">Upload Schedule</v-btn>
         <v-btn variant="outlined" color="primary" @click="open_popup_schedule_create">Create</v-btn>
-        <v-btn variant="outlined" color="primary" @click="">Refresh</v-btn>
+        <v-btn variant="outlined" color="primary" @click="pipe_execute_refresh_schedule">Refresh</v-btn>
       </div>
     </template>
-    {{  _data_all_schedule }}
+    <!-- POPUP: ERROR -->
+    <molecules-molecule-popup-error :autoClose="false" :open="_state_popup_error" :title="'Error'" @close="_state_popup_error = false" maxWidth="400">
+      <atoms-atom-base-wrapper width="400px" height="100px" maxWidth="100%" maxHeight="400px">
+          <pre>{{ _data_error_msg }}</pre>
+      </atoms-atom-base-wrapper>
+    </molecules-molecule-popup-error>
+    <!-- POPUP: SUCCESS -->
+    <molecules-molecule-popup-success :open="_state_popup_success" :title="'Success'" @close="_state_popup_success = false" maxWidth="400">
+      <atoms-atom-base-wrapper width="400px" height="100px" maxWidth="100%" maxHeight="400px">
+          <atoms-atom-base-label>{{ _data_success_msg }}</atoms-atom-base-label>
+      </atoms-atom-base-wrapper>
+    </molecules-molecule-popup-success>
     <!-- TABLE: SCHEDULE TABLE -->
-    <molecules-molecule-table-schedule class="mt-4" :schedule-data="_data_all_schedule" @edit="open_popup_schedule_edit" @view="open_popup_schedule_view" @delete="" />
+    <molecules-molecule-table-schedule class="mt-4" :schedule-data="_data_all_schedule" @edit="open_popup_schedule_edit" @view="open_popup_schedule_view" />
     <!-- POPUP: VIEW SCHEDULE -->
     <molecules-molecule-popup-information :title="'Schedule View'" max-width="800" :open="_state_popup_schedule_view" @close="close_popup_schedule_view">
       <molecules-molecule-popup-content-base>
@@ -17,6 +28,9 @@
           <atoms-atom-base-wrapper max-width="100%" max-height="400px">
             <molecules-molecule-data-display-schedule :schedule-data="_data_selected_schedule"/>
           </atoms-atom-base-wrapper>
+        </template>
+        <template #actions>
+          <v-btn variant="outlined" size="small" color="red" @click="open_popup_schedule_delete_confirmation">Delete</v-btn>
         </template>
       </molecules-molecule-popup-content-base>
     </molecules-molecule-popup-information>
@@ -65,6 +79,17 @@
         </template>
         <template #actions>
             <molecules-molecule-group-button-yes-no @yes="pipe_execute_create_schedule" @no="close_popup_schedule_create_confirmation"/>
+        </template>
+      </molecules-molecule-popup-content-base>
+    </molecules-molecule-popup-confirmation>
+    <!-- POPUP: DELETE CONFIRMATION -->
+    <molecules-molecule-popup-confirmation :title="'Delete Confirmation'" :open="_state_popup_schedule_delete_confirmation" @close="close_popup_schedule_delete_confirmation" maxWidth="500">
+      <molecules-molecule-popup-content-base>
+        <template #content>
+            <atoms-atom-base-label>Are you sure you want to DELETE this schedule?</atoms-atom-base-label>
+        </template>
+        <template #actions>
+            <molecules-molecule-group-button-yes-no @yes="pipe_execute_delete_schedule" @no="close_popup_schedule_delete_confirmation"/>
         </template>
       </molecules-molecule-popup-content-base>
     </molecules-molecule-popup-confirmation>
@@ -117,6 +142,8 @@ const {
 
   pipe_execute_edit_schedule,
   pipe_execute_create_schedule,
+  pipe_execute_refresh_schedule,
+  pipe_execute_delete_schedule,
 
 } = useScheduleProcess();
 

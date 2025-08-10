@@ -14,12 +14,10 @@
     </v-tabs-window-item>
     <v-tabs-window-item value="counter">
       <v-card flat>
-        <p>counter tab view</p>
       </v-card>
     </v-tabs-window-item>
     <v-tabs-window-item value="aggregate">
       <v-card flat>
-        <p>aggregate tab view</p>
       </v-card>
     </v-tabs-window-item>
     <v-tabs-window-item value="history">
