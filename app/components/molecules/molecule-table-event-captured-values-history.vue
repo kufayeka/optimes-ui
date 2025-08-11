@@ -1,7 +1,7 @@
 <template>
   <atoms-atom-data-display-col title="Machine Speed" class="d-flex gap-2 flex-column">
     <atoms-atom-base-chip size="large" color="primary">
-      <atoms-atom-base-label-xxl>
+      <atoms-atom-base-label-xxl class="d-flex flex-col justify-center">
         {{ formattedMachineSpeed }} meter / minute
       </atoms-atom-base-label-xxl>
     </atoms-atom-base-chip>
