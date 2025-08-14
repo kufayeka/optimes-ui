@@ -15,10 +15,10 @@
       :title="'Edit Event'"
       :open="popupOpenEditEvent"
       @close="popupOpenEditEvent = false"
-      maxWidth="500">
+      maxWidth="700px">
           <molecules-molecule-popup-content-base>
             <template #content>
-              <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+              <atoms-atom-base-wrapper width="700px" max-width="100%" max-height="400px">
                 <molecules-molecule-data-edit-event-process 
                   :initialData="selectedEventData" 
                   @update="updatedEventData = $event"

@@ -68,10 +68,9 @@ const handleCreateProcessEvent = async (macro) => {
     const response = await apiServices.postEventProcessCreate({
       body: {
         event_type: macro.id,
-        notes: "-",
-        scrap_flag: false,
-        supplementary_flag: false,
-      }
+        activity_code: [],
+        material_id: "",
+      } 
     });
 
     if(response.success){

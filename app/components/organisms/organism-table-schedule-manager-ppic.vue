@@ -39,6 +39,7 @@
       <molecules-molecule-popup-content-base>
         <template #content>
           <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+            {{  }}
             <molecules-molecule-form-edit-generic :form-initial-data="_data_selected_schedule" :form-template="edit_form_template" v-model:formUpdatedData="_data_modified_schedule"/>
           </atoms-atom-base-wrapper>
         </template>
@@ -144,7 +145,6 @@ const {
   pipe_execute_create_schedule,
   pipe_execute_refresh_schedule,
   pipe_execute_delete_schedule,
-
 } = useScheduleProcess();
 
 
@@ -155,7 +155,6 @@ const edit_form_template = computed(() => [
   { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value, itemTitle: 'value.title', itemValue: 'id' },
   { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true },
   { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true },
-  { key: 'schedule_data.material', label: 'Material', type: 'text', required: true },
   { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', required: true, max: 9999999, min: 0 },
   { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true },
   { key: 'notes', label: 'Notes', type: 'textarea', required: false },
@@ -169,7 +168,6 @@ const create_form_template = computed(() => [
   { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true },
   { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true },
   { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value, itemTitle: 'value.title', itemValue: 'id' },
-  { key: 'schedule_data.material', label: 'Material', type: 'text', required: true },
   { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', min: 0, max: 9999999, required: true },
   { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true },
   { key: 'notes', label: 'Notes', type: 'textarea', required: false },
@@ -181,7 +179,6 @@ const create_form_initial_data = {
     sales_order_number: '',
     shift: '', 
     routing: '', 
-    material: '',
     quantity_order: 0,
     quantity_unit: '',
   },

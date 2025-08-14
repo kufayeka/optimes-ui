@@ -12,7 +12,7 @@
       </v-tabs>
 
       <v-tabs-window v-model="tab">
-        <v-tabs-window-item value="schedule-overview">
+        <v-tabs-window-item v alue="schedule-overview">
           <v-card flat>
             <v-card-text>
               <organisms-organism-chart-gantt-ppic-schedule/>              
@@ -38,9 +38,23 @@
   </v-card>
 </template>
 
-<script setup lang="ts">
+<script setup lang="js">
 definePageMeta({
-  layout: 'layout-logged-in'
+  name: 'ppic',
+  title: 'PPIC Dashboard',
+  description: 'Dashboard for PPIC to manage schedules, process, and downtime events',
+  keywords: 'ppic, dashboard, schedules, process, downtime',
+  icon: 'mdi-account-cog',
+  layout: 'layout-logged-in',
+  middleware: ['role-ppic-only'],
+});
+
+useHead({
+  title: 'PPIC Dashboard',
+  meta: [
+    { name: 'description', content: 'Dashboard for PPIC to manage schedules, process, and downtime events' },
+    { name: 'keywords', content: 'ppic, dashboard, schedules, process, downtime' }
+  ]
 });
 
 import { ref } from 'vue';

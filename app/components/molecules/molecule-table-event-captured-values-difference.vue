@@ -5,7 +5,7 @@
         {{ formatNumber(cm) }} cm
       </atoms-atom-base-label-xxl>
     </atoms-atom-base-chip>
-
+ 
     <atoms-atom-base-chip size="large" color="secondary">
       <atoms-atom-base-label-xxl>
         {{ formatNumber(meter) }} m
@@ -29,9 +29,7 @@ const eventCapturedValuesData = ref(null);
 const getData = async () => {
   try {
     const response = await apiServices.getCapturedValues({
-      params: {
-        capture_type: "difference"
-      }
+      params: { capture_type: "difference" }
     });
     eventCapturedValuesData.value = response.data[0];
   } catch (err) {
@@ -51,7 +49,7 @@ const inch = computed(() => cm.value / 2.54);
 let intervalId = null;
 onMounted(() => {
   getData();
-  intervalId = setInterval(getData, 1000);
+  intervalId = setInterval(getData, 2000);
 });
 
 onUnmounted(() => {

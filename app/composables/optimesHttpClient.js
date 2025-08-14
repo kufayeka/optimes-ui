@@ -1,9 +1,9 @@
 import { useApi } from './useApi';
 
-const { get, post, put, patch, del, } = useApi();
+const { get, post, put, del, patch } = useApi();
 
 export const apiServices = {
-  postEventProcessCreate: ({ body: { event_type, scrap_flag, supplementary_flag, notes }, ...options }) => post(`/event-process-create`, { event_type, scrap_flag, supplementary_flag, notes }, options),
+  postEventProcessCreate: ({ body: { event_type, material_id, activity_code }, ...options }) => post(`/event-process-create`, { event_type, material_id, activity_code }, options),
   postEventProcessEnd: ({ params: { eventId }, ...options }) => post(`/event-process-end/${eventId}`, {}, options),
   putEventProcessUpdateAttributes: ({ body: { scrap_flag, supplementary_flag, notes }, params: { eventId }, ...options }) => put(`/event-process-update-attributes/${eventId}`, { scrap_flag, supplementary_flag, notes }, options),
   getEventHistoryAll: ({ params: { event_type }, ...options }) => get(`/event-history-all/${event_type}`, options),
@@ -19,7 +19,7 @@ export const apiServices = {
   postSchedulesBatchReplace: ({ body: { sql_script }, params: { schedule_type }, ...options }) => post(`/schedules-batch-replace/${schedule_type}`, { sql_script }, options),
   putModifyScheduleData: ({ body: { schedule_category, planned_start_time, planned_finish_time, schedule_data, notes }, params: { schedule_id }, ...options }) => put(`/modify-schedule-data/${schedule_id}`, { schedule_category, planned_start_time, planned_finish_time, schedule_data, notes }, options),
   postCreateScheduleData: ({ body: { schedule_category, planned_start_time, planned_finish_time, schedule_data, notes }, ...options }) => post(`/create-schedule-data`, { schedule_category, planned_start_time, planned_finish_time, schedule_data, notes }, options),
-  deleteDeleteScheduleData: ({ params: { schedule_id }, ...options }) => del(`/delete-schedule-data/${schedule_id}`, options),
+  deleteDeleteScheduleData: ({ params: { schedule_id }, ...options }) => delete(`/delete-schedule-data/${schedule_id}`, options),
   getHealthCheck: ({ ...options }) => get(`/health-check`, options),
   getDataReferenceAll: ({ params: { reference_category }, ...options }) => get(`/data-reference-all/${reference_category}`, options),
   getDataReferenceOne: ({ params: { reference_category }, ...options }) => get(`/data-reference-one/${reference_category}`, options),

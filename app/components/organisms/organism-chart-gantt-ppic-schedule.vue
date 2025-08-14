@@ -1,4 +1,5 @@
 <template>
+  
   <molecules-molecule-chart-gantt-schedule 
     :rawSchedules="_data_all_schedule"
     @refresh="pipe_execute_refresh_schedule"
@@ -14,7 +15,6 @@
     <molecules-molecule-popup-content-base>
       <template #content>
         <atoms-atom-base-wrapper max-width="100%" max-height="400px">
-          {{ _data_selected_schedule }}
           <molecules-molecule-data-display-schedule :schedule-data="_data_selected_schedule" />
         </atoms-atom-base-wrapper>
       </template>

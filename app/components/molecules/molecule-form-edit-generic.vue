@@ -40,7 +40,9 @@
 
       <!-- NUMBER -->
       <template v-else-if="field.type === 'number'">
-        <atoms-atom-base-label :bold="true">{{ field.label }} (min: {{ field.min }}, max: {{ field.max }})</atoms-atom-base-label>
+        <atoms-atom-base-label :bold="true">
+          {{ field.label }} (min: {{ field.min }}, max: {{ field.max }})
+        </atoms-atom-base-label>
         <atoms-atom-base-input
           type="number"
           :placeholder="field.placeholder || ''"
@@ -74,7 +76,7 @@
           :max="field.max || null"
           :use-now="field.useNow || false"
           :clearable="field.clearable ?? true"
-          @update:modelValue="updateValue(field.key, $event)"
+          @update:modelValue="updateValue(field.key, $event, field.type)"
         />
       </template>
 
@@ -90,6 +92,23 @@
         />
       </template>
 
+      <!-- ARRAY -->
+      <template v-else-if="field.type === 'array'">
+        <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
+        <div class="array-field">
+          <!-- Tampilkan elemen array -->
+          <div v-for="(item, idx) in getValue(field)" :key="idx" class="array-item">
+            <atoms-atom-base-input
+              :model-value="item"
+              :placeholder="`Item ${idx + 1}`"
+              @update:modelValue="updateArrayItem(field.key, idx, $event)"
+            />
+            <button class="remove-btn" @click="removeArrayItem(field.key, idx)">Remove</button>
+          </div>
+          <!-- Tombol untuk menambah elemen baru -->
+          <button class="add-btn" @click="addArrayItem(field.key)">Add Item</button>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -100,57 +119,156 @@ import { get, set, cloneDeep, merge } from 'lodash-es';
 const props = defineProps({
   formTemplate: { type: Array, required: true },
   formInitialData: { type: Object, default: () => ({}) },
-  formUpdatedData: { type: Object, required: true }
+  formUpdatedData: { type: Object, required: true },
 });
 
 const emit = defineEmits(['update:formUpdatedData']);
 
-function toDatetimeLocal(val) {
-  if (!val) return '';
-  const date = new Date(val);
-  if (isNaN(date)) return val;
+/* Helper: Konversi UTC (ISO string) ke format lokal sesuai tipe */
+function utcToLocal(utcVal, type) {
+  if (!utcVal) return '';
+  const date = new Date(utcVal);
+  if (isNaN(date)) return utcVal;
   const tzOffset = date.getTimezoneOffset() * 60000;
-  return new Date(date - tzOffset).toISOString().slice(0, 16);
+  const localDate = new Date(date.getTime() - tzOffset);
+  if (type === 'datetime') {
+    return localDate.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+  } else if (type === 'date') {
+    return localDate.toISOString().slice(0, 10); // "YYYY-MM-DD"
+  } else if (type === 'time') {
+    return localDate.toISOString().slice(11, 16); // "HH:MM"
+  } else if (type === 'month') {
+    return localDate.toISOString().slice(0, 7); // "YYYY-MM"
+  }
+  return utcVal;
 }
 
+/* Helper: Konversi nilai lokal ke UTC ISO string sesuai tipe */
+function localToUtcIso(localStr, type) {
+  if (!localStr) return '';
+  if (type === 'datetime') {
+    const [datePart, timePart] = localStr.split('T');
+    const [y, m, d] = datePart.split('-').map(Number);
+    const [hh, mm] = timePart.split(':').map(Number);
+    const date = new Date(y, m - 1, d, hh, mm);
+    return date.toISOString();
+  } else if (type === 'date') {
+    const [y, m, d] = localStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return date.toISOString();
+  } else if (type === 'time') {
+    const [hh, mm] = localStr.split(':').map(Number);
+    const now = new Date();
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm);
+    return date.toISOString();
+  } else if (type === 'month') {
+    const [y, m] = localStr.split('-').map(Number);
+    const date = new Date(y, m - 1, 1);
+    return date.toISOString();
+  }
+  return localStr;
+}
+
+/* Fungsi getValue: Ambil nilai dari form data */
 const getValue = (field) => {
   let value =
     get(props.formUpdatedData, field.key) ??
     get(props.formInitialData, field.key) ??
-    '';
-
-  if (field.type === 'datetime' && field.isISOString) {
-    return toDatetimeLocal(value);
+    (field.type === 'array' ? [] : '');
+  if (['datetime', 'date', 'time', 'month'].includes(field.type) && value && typeof value === 'string') {
+    return utcToLocal(value, field.type);
   }
-
   return value;
 };
 
-const updateValue = (key, value) => {
+/* Fungsi updateValue: Update form data */
+const updateValue = (key, value, type = null) => {
   const mergedData = cloneDeep(props.formInitialData);
   merge(mergedData, props.formUpdatedData);
-  set(mergedData, key, value);
+  if (value && typeof value === 'string' && type && ['datetime', 'date', 'time', 'month'].includes(type)) {
+    set(mergedData, key, localToUtcIso(value, type));
+  } else {
+    set(mergedData, key, value);
+  }
   emit('update:formUpdatedData', mergedData);
 };
 
+/* Fungsi untuk sanitasi angka */
 function sanitizeNumber(field, val) {
   if (val === '' || val === null) return '';
   let num = Number(val);
-  if (!field.allowNegative && num < 0) num = Math.abs(num);
+  if (field.allowNegative === false && num < 0) num = Math.abs(num);
   if (field.min !== undefined && num < field.min) num = field.min;
   if (field.max !== undefined && num > field.max) num = field.max;
   return num;
 }
+
+/* Fungsi untuk menangani array: Update item di index tertentu */
+const updateArrayItem = (key, index, value) => {
+  const mergedData = cloneDeep(props.formInitialData);
+  merge(mergedData, props.formUpdatedData);
+  const array = get(mergedData, key, []).slice(); // Ambil salinan array
+  array[index] = value; // Update item
+  set(mergedData, key, array);
+  emit('update:formUpdatedData', mergedData);
+};
+
+/* Fungsi untuk menambahkan item baru ke array */
+const addArrayItem = (key) => {
+  const mergedData = cloneDeep(props.formInitialData);
+  merge(mergedData, props.formUpdatedData);
+  const array = get(mergedData, key, []).slice();
+  array.push(''); // Tambah item baru (kosong)
+  set(mergedData, key, array);
+  emit('update:formUpdatedData', mergedData);
+};
+
+/* Fungsi untuk menghapus item dari array */
+const removeArrayItem = (key, index) => {
+  const mergedData = cloneDeep(props.formInitialData);
+  merge(mergedData, props.formUpdatedData);
+  const array = get(mergedData, key, []).slice();
+  array.splice(index, 1); // Hapus item di index
+  set(mergedData, key, array);
+  emit('update:formUpdatedData', mergedData);
+};
 </script>
 
 <style scoped>
 .form-edit-generic {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 .checkbox-field {
   display: flex;
   align-items: center;
   gap: 5px;
+}
+.array-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.array-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.remove-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.add-btn {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

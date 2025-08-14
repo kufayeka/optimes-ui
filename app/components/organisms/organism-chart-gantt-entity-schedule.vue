@@ -9,20 +9,19 @@
         <molecules-molecule-popup-content-base>
             <template #content>
                 <atoms-atom-base-wrapper max-width="100%" max-height="400px">
-                    {{ selectedSchedule }}
                     <molecules-molecule-data-display-schedule :schedule-data="selectedSchedule"/>
                 </atoms-atom-base-wrapper>
             </template>
             <template #actions>
                 <v-btn variant="outlined" color="success" @click="popupLoadSchedulConfirmationOpen = true">Load Schedule</v-btn>
             </template>
-        </molecules-molecule-popup-content-base>
+        </molecules-molecule-popup-content-base> 
     </molecules-molecule-popup-information>
 
     <molecules-molecule-popup-confirmation 
         :title="'Load Schedule Confirmation'"
-        :open="popupLoadSchedulConfirmationOpen" 
-        @close="popupLoadSchedulConfirmationOpen = false"
+        :open="popupLoadSchedulConfirmationOpen"  
+        @close="popupLoadSchedulConfirmationOpen =  false"
         maxWidth="500">
         <molecules-molecule-popup-content-base>
             <template #content>
