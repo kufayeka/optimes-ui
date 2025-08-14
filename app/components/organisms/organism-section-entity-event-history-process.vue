@@ -11,7 +11,7 @@
         <template #content>
           <atoms-atom-base-wrapper max-width="100%" max-height="400px">
             {{  _data_modified_event_history_process }}
-            <molecules-molecule-form-edit-generic :form-initial-data="_data_modified_event_history_process" :form-template="ui_edit_event_form_template" @update:form-updated-data="_data_modified_event_history_process"/>
+            <molecules-molecule-form-edit-generic :form-initial-data="_data_modified_event_history_process" :form-template="ui_edit_event_form_template" v-model:form-updated-data="_data_modified_event_history_process"/>
           </atoms-atom-base-wrapper>
         </template>
         <template #actions>
