@@ -35,12 +35,7 @@ export const useEventHistoryProcess = () => {
     const extract_error_data = R.propOr('Unknown error', 'message');
 
     // --- Generic async API processor
-    const pipe_process_api_response =
-        (successPipe, errorPipe) => (apiCall) =>
-        () =>
-        apiCall()
-            .then(R.tryCatch(successPipe, errorPipe))
-            .catch(errorPipe);
+    const pipe_process_api_response = (successPipe, errorPipe) => (apiCall) => () => apiCall().then(R.tryCatch(successPipe, errorPipe)).catch(errorPipe);
 
     // --- Generic popup open/close helpers
     const open_popup = (popupRef, dataRef, data) => {
@@ -60,6 +55,8 @@ export const useEventHistoryProcess = () => {
     const ui_command_popup_success_close = () => close_popup(_state_popup_success, null);
     const ui_command_popup_edit_event_open = (data) => open_popup(_state_popup_edit_event, _data_modified_event_history_process, data);
     const ui_command_popup_edit_event_close = () => close_popup(_state_popup_edit_event, null);
+
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     // --- API: Get All Event History
     const api_get_all_event_history_process = () =>
@@ -146,13 +143,12 @@ export const useEventHistoryProcess = () => {
         })
     )();
 
-        // --- API: update spesific event attributes by ID
+    // --- API: apply spesific event attributes by ID
     const api_apply_process_event = (data) =>
         pipe_process_api_response(
             R.pipe(
                 () => set_ref(_state_popup_success, true),
-                () => set_string(_data_success_msg, 'Event attribute updated successfully.'),
-                () => api_get_all_entity_event_history_process(),
+                () => set_string(_data_success_msg, 'Event applied successfully.'),
             ),
             R.pipe(
                 extract_error_data,

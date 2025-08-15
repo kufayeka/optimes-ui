@@ -22,7 +22,7 @@
         <v-tabs-window-item value="process">
           <v-card flat>
              <v-card-text>
-                <organisms-organism-section-event-macro-process/>
+                <organisms-organism-section-event-macro-process :active="tab === 'process'" />
                 <organisms-organism-section-event-captured-values-process/>
                 <organisms-organism-section-entity-event-history-process/>
              </v-card-text>
@@ -31,7 +31,7 @@
         <v-tabs-window-item value="downtime">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-section-event-macro-downtime/>
+              <organisms-organism-section-event-macro-downtime :active="tab === 'downtime'" />
               <organisms-organism-section-event-captured-values-process/>
               <organisms-organism-section-entity-event-history-process/>              
             </v-card-text>

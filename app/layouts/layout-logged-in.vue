@@ -27,9 +27,7 @@
       color="grey-darken-3"
       class="d-flex flex-row py-2 justify-space-between"
     >
-      <span class="white-text"
-        >&copy; {{ new Date().getFullYear() }} Made by Javindotech</span
-      >
+      <div id="eventMacroPlace"></div>
       <v-btn class="mr-2" @click="refreshTime">
         RTC: {{ currentDateTime }}
       </v-btn>

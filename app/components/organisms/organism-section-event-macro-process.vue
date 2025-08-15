@@ -1,67 +1,83 @@
 <template>
+  <!-- Teleport hanya aktif jika prop active true -->
+  <teleport v-if="active" to="#eventMacroPlace">
     <molecules-molecule-form-section :title="'Event Macro (Process)'">
-        <div class="d-flex flex-row w-100">
-            <v-btn
-                class="mx-5 full-bold-btn"
-                v-for="item in macroEventProcessReferences"
-                :key="item.id"
-                :color="item.value.color"
-                :value="item.id"
-                variant="elevated"
-                @click="handleCreateProcessEvent(item)"
-            >
-                {{ item.value.title }}
-            </v-btn>
-        </div>
+      <div class="d-flex flex-row w-100">
+        <v-btn
+          class="mx-5 full-bold-btn"
+          v-for="item in macroEventProcessReferences"
+          :key="item.id"
+          :color="item.value.color"
+          :value="item.id"
+          variant="elevated"
+          @click="handleCreateProcessEvent(item)"
+        >
+          {{ item.value.title }}
+        </v-btn>
+      </div>
     </molecules-molecule-form-section>
 
+    <!-- Popup Error -->
     <molecules-molecule-popup-error
-        :autoClose="false"
-        :open="errorMessage"
-        :title="'Error'"
-        @close="errorMessage = false"
-        maxWidth="400"
+      :autoClose="false"
+      :open="errorMessage"
+      :title="'Error'"
+      @close="errorMessage = false"
+      maxWidth="400"
     >
-        <atoms-atom-base-wrapper width="400px" height="50px" maxWidth="100%" maxHeight="50px">
-            <atoms-atom-base-label>{{ errorMessage }}</atoms-atom-base-label>
-        </atoms-atom-base-wrapper>
+      <atoms-atom-base-wrapper
+        width="400px"
+        height="50px"
+        maxWidth="100%"
+        maxHeight="50px"
+      >
+        <atoms-atom-base-label>{{ errorMessage }}</atoms-atom-base-label>
+      </atoms-atom-base-wrapper>
     </molecules-molecule-popup-error>
 
+    <!-- Popup Success -->
     <molecules-molecule-popup-success
-          :open="successMessage"
-          :title="'Success'"
-          @close="successMessage = false"
-          maxWidth="400"
-          autoClose="true"
+      :open="successMessage"
+      :title="'Success'"
+      @close="successMessage = false"
+      maxWidth="400"
+      autoClose="true"
     >
-        <atoms-atom-base-wrapper width="400px" height="50px" maxWidth="100%" maxHeight="50px">
-            <atoms-atom-base-label>{{ successMessage }}</atoms-atom-base-label>
-        </atoms-atom-base-wrapper>
+      <atoms-atom-base-wrapper
+        width="400px"
+        height="50px"
+        maxWidth="100%"
+        maxHeight="50px"
+      >
+        <atoms-atom-base-label>{{ successMessage }}</atoms-atom-base-label>
+      </atoms-atom-base-wrapper>
     </molecules-molecule-popup-success>
-
+  </teleport>
 </template>
 
 <script setup lang="js">
 import { ref, onMounted } from 'vue';
 
+const props = defineProps({
+  active: { type: Boolean, default: false }
+});
+
 const errorMessage = ref(null);
 const successMessage = ref(null);
-
 const macroEventProcessReferences = ref([]);
 
 const handleGetMacroEventProcessReferences = async () => {
   try {
     const response = await apiServices.getDataReferenceAll({
-      params: {
-        reference_category: "macro_event_process"
-      }
+      params: { reference_category: "macro_event_process" }
     });
-    macroEventProcessReferences.value = Array.isArray(response.data) ? response.data : [];
+    macroEventProcessReferences.value = Array.isArray(response.data)
+      ? response.data
+      : [];
   } catch (err) {
-    console.error('Error handleGetMacroEventProcessReferences:', err);
+    console.error("Error handleGetMacroEventProcessReferences:", err);
   }
 };
-
 
 const handleCreateProcessEvent = async (macro) => {
   try {
@@ -70,20 +86,20 @@ const handleCreateProcessEvent = async (macro) => {
         event_type: macro.id,
         activity_code: [],
         material_id: "",
-      } 
+      },
     });
 
-    if(response.success){
+    if (response.success) {
       successMessage.value = `${macro.value.title} Process Event Created.`;
     } else {
-      errorMessage.value = response.data.message
+      errorMessage.value = response.data.message;
     }
-} catch (err) {
+  } catch (err) {
     errorMessage.value = err;
-    console.error('Error handleCreateProcessEvent:', err);
+    console.error("Error handleCreateProcessEvent:", err);
   }
 };
- 
+
 onMounted(() => {
   handleGetMacroEventProcessReferences();
 });
