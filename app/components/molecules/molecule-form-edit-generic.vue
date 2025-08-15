@@ -97,18 +97,21 @@
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
         <div class="array-field">
           <!-- Tampilkan elemen array -->
-          <div v-for="(item, idx) in getValue(field)" :key="idx" class="array-item">
+          <div v-for="(item, idx) in getValue(field)" :key="idx" class="d-flex flex-row">
             <atoms-atom-base-input
+              class="mr-3"
               :model-value="item"
               :placeholder="`Item ${idx + 1}`"
               @update:modelValue="updateArrayItem(field.key, idx, $event)"
             />
-            <button class="remove-btn" @click="removeArrayItem(field.key, idx)">Remove</button>
+            <v-btn color="red" variant="tonal" @click="removeArrayItem(field.key, idx)">Remove</v-btn>
           </div>
           <!-- Tombol untuk menambah elemen baru -->
-          <button class="add-btn" @click="addArrayItem(field.key)">Add Item</button>
+          <button class="add-btn" @click="addArrayItem(field.key)">Add</button>
         </div>
       </template>
+
+      <v-divider class="my-2"/>
     </div>
   </div>
 </template>
@@ -252,6 +255,7 @@ const removeArrayItem = (key, index) => {
 }
 .array-item {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
 }
@@ -259,7 +263,6 @@ const removeArrayItem = (key, index) => {
   background-color: #ff4d4f;
   color: white;
   border: none;
-  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
 }

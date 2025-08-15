@@ -3,19 +3,18 @@
     <template #endSection>
       <v-btn variant="outlined" color="primary" @click="pipe_execute_refresh_event_history">Refresh</v-btn>
     </template>
-    <molecules-molecule-table-event-history-process :event-history-data="_data_all_entity_event_history_process" @endEvent="pipe_execute_end_event" @editEvent="ui_command_popup_edit_event_open" @applyEvent="" />
+    <molecules-molecule-table-event-history-process :event-history-data="_data_all_entity_event_history_process" @endEvent="pipe_execute_end_event" @editEvent="ui_command_popup_edit_event_open" @applyEvent="pipe_execute_apply_event" />
   </molecules-molecule-form-section>
   <!-- POPUP: EVENT EDIIT -->
-  <molecules-molecule-popup-edit :title="'Edit Event'" max-width="700" :open="_state_popup_edit_event" @close="ui_command_popup_edit_event_close">
+  <molecules-molecule-popup-edit :title="'Edit Event'" max-width="800px" :open="_state_popup_edit_event" @close="ui_command_popup_edit_event_close">
     <molecules-molecule-popup-content-base>
         <template #content>
-          <atoms-atom-base-wrapper max-width="100%" max-height="400px">
-            {{  _data_modified_event_history_process }}
+          <atoms-atom-base-wrapper width="800px" max-width="100%" max-height="400px">
             <molecules-molecule-form-edit-generic :form-initial-data="_data_modified_event_history_process" :form-template="ui_edit_event_form_template" v-model:form-updated-data="_data_modified_event_history_process"/>
           </atoms-atom-base-wrapper>
         </template>
         <template #actions>
-          <molecules-molecule-group-button-save-discard @save="" @discard=""/>
+          <molecules-molecule-group-button-save-discard @save="pipe_execute_update_event_attributes" @discard="ui_command_popup_edit_event_close"/>
         </template>
       </molecules-molecule-popup-content-base>
   </molecules-molecule-popup-edit>
@@ -69,15 +68,17 @@ const {
 
 
   pipe_execute_refresh_event_history,
+  pipe_execute_update_event_attributes,
   pipe_execute_end_event,
+  pipe_execute_apply_event,
 
 } = useEventHistoryProcess();
 
 
 const ui_edit_event_form_template = computed(() => [
-  { key: 'event_attributes.notes', label: 'Notes', type: 'textarea', required: false },
   { key: 'event_attributes.activity_code', label: 'Activity Code', type: 'array', required: true },
-  { key: 'event_attributes.material_id', label: 'Material Id', type: 'text', required: true },
+  { key: 'event_attributes.material_code', label: 'Material Code / ID', type: 'text', required: true },
+  { key: 'event_attributes.notes', label: 'Notes', type: 'textarea', required: false },
   { key: 'event_attributes.scrap_flag', label: 'Scrap Flag', type: 'checkbox', required: false },
   { key: 'event_attributes.supplementary_flag', label: 'Supplementary Flag', type: 'checkbox', required: false },
 ]);

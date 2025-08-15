@@ -1,21 +1,22 @@
 <template>
-  <atoms-atom-data-display-col title="Unwind Paper Length" class="d-flex gap-2">
-    <atoms-atom-base-chip size="large" color="primary">
-      <atoms-atom-base-label-xxl>
+  <atoms-atom-base-label bold="true" class="mt-3">Unwind Paper Length</atoms-atom-base-label>
+  <atoms-atom-data-display-col class="d-flex gap-2">
+    <atoms-atom-base-chip size="x-large" color="primary">
+      <atoms-atom-base-label-xxxl>
         {{ formatNumber(cm) }} cm
-      </atoms-atom-base-label-xxl>
+      </atoms-atom-base-label-xxxl>
     </atoms-atom-base-chip>
  
-    <atoms-atom-base-chip size="large" color="secondary">
-      <atoms-atom-base-label-xxl>
+    <atoms-atom-base-chip size="x-large" color="secondary">
+      <atoms-atom-base-label-xxxl>
         {{ formatNumber(meter) }} m
-      </atoms-atom-base-label-xxl>
+      </atoms-atom-base-label-xxxl>
     </atoms-atom-base-chip>
 
-    <atoms-atom-base-chip size="large" color="success">
-      <atoms-atom-base-label-xxl>
+    <atoms-atom-base-chip size="x-large" color="success">
+      <atoms-atom-base-label-xxxl>
         {{ formatNumber(inch) }} inch
-      </atoms-atom-base-label-xxl>
+      </atoms-atom-base-label-xxxl>
     </atoms-atom-base-chip>
   </atoms-atom-data-display-col>
 </template>

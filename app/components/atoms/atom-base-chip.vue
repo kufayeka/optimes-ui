@@ -8,7 +8,7 @@
     :prepend-icon="prependIcon"
     @click="$emit('click')"
     @click:close="$emit('close')"
-    class="base-chip"
+    class="base-chip align-center justify-center"
   >
     <slot></slot>
   </v-chip>
@@ -44,6 +44,6 @@ defineEmits(['click', 'close']);
 
 <style scoped>
 .base-chip {
-  margin: 4px;
+  padding: 3px;
 }
 </style>

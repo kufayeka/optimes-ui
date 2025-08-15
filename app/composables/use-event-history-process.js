@@ -83,6 +83,7 @@ export const useEventHistoryProcess = () => {
         })
     )();
 
+    // --- API: Get All Event History (Entity)
     const api_get_all_entity_event_history_process = () =>
         pipe_process_api_response(
             R.pipe(
@@ -104,6 +105,7 @@ export const useEventHistoryProcess = () => {
         })
     )();
 
+    // --- API: End Spesific Event by ID
     const api_end_entity_event_history_process = (data) =>
         pipe_process_api_response(
             R.pipe(
@@ -123,17 +125,71 @@ export const useEventHistoryProcess = () => {
             }
         })
     )();
-    
-    // --- PIPE: Action edit Schedule
+
+    // --- API: update spesific event attributes by ID
+    const api_update_attributes_event_history_process = (data) =>
+        pipe_process_api_response(
+            R.pipe(
+                () => set_ref(_state_popup_success, true),
+                () => set_string(_data_success_msg, 'Event attribute updated successfully.'),
+                () => api_get_all_entity_event_history_process(),
+            ),
+            R.pipe(
+                extract_error_data,
+                set_string(_data_error_msg),
+                () => set_ref(_state_popup_error, true)
+            ),
+        )(() =>
+        apiServices.putEventProcessUpdateAttributes({
+           params: { eventId: data.id },
+           body: data.event_attributes,
+        })
+    )();
+
+        // --- API: update spesific event attributes by ID
+    const api_apply_process_event = (data) =>
+        pipe_process_api_response(
+            R.pipe(
+                () => set_ref(_state_popup_success, true),
+                () => set_string(_data_success_msg, 'Event attribute updated successfully.'),
+                () => api_get_all_entity_event_history_process(),
+            ),
+            R.pipe(
+                extract_error_data,
+                set_string(_data_error_msg),
+                () => set_ref(_state_popup_error, true)
+            ),
+        )(() => 
+        apiServices.postEventApply({
+           params: {
+            event_id: data.id,
+            event_type: 'process', 
+           }
+        })
+    )();
+
+    // --- PIPE: Action end event
     const pipe_execute_end_event = (data) => {
         set_ref(_data_selected_event_history_process, data);
         api_end_entity_event_history_process(_data_selected_event_history_process.value);
     };
 
-    // --- PIPE: Action refresh schedule
+    // --- PIPE: Action update event attributes
+    const pipe_execute_update_event_attributes = () => {
+        api_update_attributes_event_history_process(_data_modified_event_history_process.value);
+    };
+
+    // --- PIPE: Action refresh event
     const pipe_execute_refresh_event_history = () => {
         api_get_all_entity_event_history_process();
     };
+
+    // --- PIPE: Action apply event
+    const pipe_execute_apply_event = (data) => {
+        set_ref(_data_selected_event_history_process, data);
+        api_apply_process_event(_data_selected_event_history_process.value);
+    };
+
 
     // --- Lifecycle
     onMounted(() => {
@@ -161,6 +217,8 @@ export const useEventHistoryProcess = () => {
         ui_command_popup_edit_event_open,
 
         pipe_execute_refresh_event_history,
+        pipe_execute_update_event_attributes,
         pipe_execute_end_event,
+        pipe_execute_apply_event,
     };
 };
