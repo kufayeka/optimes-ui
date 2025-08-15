@@ -130,6 +130,7 @@ export const useEventHistoryProcess = () => {
                 () => set_ref(_state_popup_success, true),
                 () => set_string(_data_success_msg, 'Event attribute updated successfully.'),
                 () => api_get_all_entity_event_history_process(),
+                () => ui_command_popup_edit_event_close(),
             ),
             R.pipe(
                 extract_error_data,

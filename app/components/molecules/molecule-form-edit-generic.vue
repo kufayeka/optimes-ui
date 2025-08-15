@@ -95,7 +95,7 @@
       <!-- ARRAY -->
       <template v-else-if="field.type === 'array'">
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
-        <div class="array-field">
+        <div class="array-field d-flex flex-col justify-center">
           <!-- Tampilkan elemen array -->
           <div v-for="(item, idx) in getValue(field)" :key="idx" class="d-flex flex-row">
             <atoms-atom-base-input
@@ -106,8 +106,10 @@
             />
             <v-btn color="red" variant="tonal" @click="removeArrayItem(field.key, idx)">Remove</v-btn>
           </div>
-          <!-- Tombol untuk menambah elemen baru -->
-          <button class="add-btn" @click="addArrayItem(field.key)">Add</button>
+          <div class="d-flex flex-row justify-center">
+            <!-- Tombol untuk menambah elemen baru -->
+            <v-btn class="w-33" color="primary" variant="tonal" @click="addArrayItem(field.key)">Add</v-btn>
+          </div>
         </div>
       </template>
 

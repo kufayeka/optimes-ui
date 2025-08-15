@@ -84,17 +84,4 @@ const ui_edit_event_form_template = computed(() => [
 ]);
 
 
-const edit_form_template = computed(() => [
-  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: _data_all_shift.value, itemTitle: 'value.title', itemValue: 'id' },
-  { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true },
-  { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true },
-  { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value, itemTitle: 'value.title', itemValue: 'id' },
-  { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true },
-  { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true },
-  { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', required: true, max: 9999999, min: 0 },
-  { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true },
-  { key: 'notes', label: 'Notes', type: 'textarea', required: false },
-]);
-
-
 </script>

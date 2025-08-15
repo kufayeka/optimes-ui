@@ -35,6 +35,15 @@
         @update:modelValue="val => updateValue(field.key, sanitizeNumber(field, val))"
       />
 
+      <!-- PASSWORD -->
+      <atoms-atom-base-input
+        v-else-if="field.type === 'password'"
+        :id="field.key"
+        type="password"
+        :model-value="getValue(field)"
+        @update:modelValue="val => updateValue(field.key, sanitizeNumber(field, val))"
+      />
+
       <!-- SELECT -->
       <atoms-atom-base-select
         v-else-if="field.type === 'select'"
