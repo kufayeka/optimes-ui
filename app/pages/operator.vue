@@ -4,6 +4,10 @@
       <template #title>
         <atoms-atom-base-label-lg :bold="true">Operator Dashboard</atoms-atom-base-label-lg>
       </template>
+      <template #append>
+          <organisms-organism-popup-display-selected-entity/>
+          <organisms-organism-popup-display-loaded-schedule/>
+      </template>
     </v-toolbar>
 
     <div class="d-flex flex-column">

@@ -14,10 +14,11 @@
     </molecules-molecule-popup-information>
     
     <v-btn 
-        class="mr-2" 
+        class="mx-5 full-bold-btn"        
         v-if="entityData"
         prepend-icon="$vuetify" 
-        variant="outlined" 
+        variant="tonal"
+        color="primary" 
         @click="popupOpen = !popupOpen"
     >Entity ({{ entityData.value.title }})</v-btn>
 </template>

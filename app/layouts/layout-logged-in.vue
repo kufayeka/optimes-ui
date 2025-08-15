@@ -9,8 +9,7 @@
       <v-app-bar-title></v-app-bar-title>
 
       <template v-slot:append>
-        <organisms-organism-popup-display-selected-entity/>
-        <organisms-organism-popup-display-loaded-schedule/>
+        <v-btn class="mr-2" @click="refreshTime">RTC: {{ currentDateTime }}</v-btn>
         <organisms-organism-popup-display-logged-account/>
       </template>
     </v-app-bar>
@@ -22,15 +21,8 @@
     </v-main>
 
     <!-- Footer -->
-    <v-footer
-      app
-      color="grey-darken-3"
-      class="d-flex flex-row py-2 justify-space-between"
-    >
-      <div id="eventMacroPlace"></div>
-      <v-btn class="mr-2" @click="refreshTime">
-        RTC: {{ currentDateTime }}
-      </v-btn>
+    <v-footer app color="primary" >
+      <div id="eventMacroPlace" class="w-100"></div>
     </v-footer>
   </v-app>
 </template>

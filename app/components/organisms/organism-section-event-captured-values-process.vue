@@ -9,7 +9,7 @@
   <v-tabs-window v-model="tab">
     <v-tabs-window-item value="difference">
       <v-card flat>
-        <molecules-molecule-table-event-captured-values-difference/>
+        <molecules-molecule-table-event-captured-values-difference @captured-event-data="processData"/>
       </v-card>
     </v-tabs-window-item>
     <v-tabs-window-item value="counter">
@@ -33,6 +33,13 @@
 import { ref, onMounted, watch } from 'vue';
 
 const tab = ref('difference');
+
+const eventData = ref({})
+
+
+const processData = (x) => {
+  eventData.value = x;
+}
 
 
 

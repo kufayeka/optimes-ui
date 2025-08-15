@@ -34,9 +34,10 @@
     </molecules-molecule-popup-confirmation>
 
     <v-btn 
-        class="mr-2" 
+        class="mx-5 full-bold-btn"        
         prepend-icon="mdi-note-text" 
-        variant="outlined" 
+        variant="tonal"
+        color="primary" 
         @click="popupOpen = true"
         :disabled="!loadedSchedule"
     >

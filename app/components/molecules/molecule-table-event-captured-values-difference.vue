@@ -1,50 +1,37 @@
 <template>
-  <atoms-atom-base-label bold="true" class="mt-3">Event Information</atoms-atom-base-label>
-  <atoms-atom-data-display-col>
-    <div class="d-flex flex-row gap-3">
-      <atoms-atom-base-chip color="primary">
-        <p class="ml-3">Event Name: {{ eventCapturedValuesData?.event_name }}</p>
-      </atoms-atom-base-chip>
-    </div>
-  </atoms-atom-data-display-col>
-
   <!-- CAPTURED VALUE -->
   <atoms-atom-base-label bold="true" class="mt-3">Unwind Paper Length</atoms-atom-base-label>
   <atoms-atom-data-display-col class="d-flex gap-2">
-    <atoms-atom-base-chip size="x-large" color="primary">
+    <div class="d-flex flex-row justify-space-evenly">
+      <atoms-atom-base-chip size="x-large" variant="flat" :color="eventCapturedValuesData?.event_type.color">
       <atoms-atom-base-label-xxxl>
         {{ formatNumber(cm) }} cm
       </atoms-atom-base-label-xxxl>
-    </atoms-atom-base-chip>
- 
-    <atoms-atom-base-chip size="x-large" color="secondary">
-      <atoms-atom-base-label-xxxl>
-        {{ formatNumber(meter) }} m
-      </atoms-atom-base-label-xxxl>
-    </atoms-atom-base-chip>
-
-    <atoms-atom-base-chip size="x-large" color="success">
-      <atoms-atom-base-label-xxxl>
-        {{ formatNumber(inch) }} inch
-      </atoms-atom-base-label-xxxl>
-    </atoms-atom-base-chip>
-  </atoms-atom-data-display-col>
-  <!-- DURATION -->
-  <atoms-atom-base-label bold="true" class="mt-3">Duration</atoms-atom-base-label>
-  <atoms-atom-data-display-col class="d-flex gap-2">
-    <div class="d-flex flex-row gap-3">
-      <atoms-atom-base-chip color="primary" class="">
-        <p class="ml-3">Event Start Time: {{ formatDateTime(eventCapturedValuesData?.start_time) }}</p>
       </atoms-atom-base-chip>
-      <atoms-atom-base-chip color="primary" class="">
-        <p class="ml-3">Event End Time: {{ formatDateTime(eventCapturedValuesData?.end_time) }}</p>
-      </atoms-atom-base-chip>      
-      <atoms-atom-base-chip color="primary" class="">
-        <p class="ml-3">Total Event Duration: {{ duration }}</p>
-      </atoms-atom-base-chip>  
+      
+      <atoms-atom-base-chip size="x-large" variant="flat" :color="eventCapturedValuesData?.event_type.color">
+        <atoms-atom-base-label-xxxl>
+          {{ formatNumber(meter) }} m
+        </atoms-atom-base-label-xxxl>
+      </atoms-atom-base-chip>
+
+      <atoms-atom-base-chip size="x-large" variant="flat" :color="eventCapturedValuesData?.event_type.color">
+        <atoms-atom-base-label-xxxl>
+          {{ formatNumber(inch) }} inch
+        </atoms-atom-base-label-xxxl>
+      </atoms-atom-base-chip>
     </div>
   </atoms-atom-data-display-col>
-
+  <!-- DURATION -->
+  <atoms-atom-base-label bold="true" class="mt-3">Event Information</atoms-atom-base-label>
+  <atoms-atom-data-display-col>
+    <div class="d-flex flex-row justify-space-evenly">
+      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">{{ eventCapturedValuesData?.event_name }}</atoms-atom-base-chip>
+      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">Total Duration: {{ duration }}</atoms-atom-base-chip>
+      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">Start Time: {{ formatDateTime(eventCapturedValuesData?.start_time) }}</atoms-atom-base-chip>
+      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">End Time: {{ formatDateTime(eventCapturedValuesData?.end_time) }}</atoms-atom-base-chip>
+    </div>
+  </atoms-atom-data-display-col>
 </template>
 
 <script setup>
@@ -52,6 +39,14 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { apiServices } from '@/composables/optimesHttpClient';
 
 const eventCapturedValuesData = ref(null);
+
+const emit = defineEmits(['capturedEventData']);
+
+// Emit ke parent setiap kali datanya berubah
+watch(eventCapturedValuesData, (newVal) => {
+  emit('capturedEventData', newVal);
+}, { immediate: true });
+
 
 // ambil data
 const getData = async () => {
