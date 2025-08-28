@@ -1,110 +1,99 @@
 <template>
-  <div>
+  <div class="calendar-wrapper">
+    <!-- native date/time input -->
     <input
-      v-if="type === 'date'"
-      :id="inputId"
-      type="date"
-      v-model="internalValue"
+      v-if="['date','datetime','time','month'].includes(type)"
+      :id="id"
+      :type="nativeType"
       :disabled="disabled"
-      :min="min"
-      :max="max"
-      :placeholder="placeholder"
-      :style="inputStyle"
-      @change="updateValue"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
     />
-    <input
-      v-if="type === 'month'"
-      :id="inputId"
-      type="month"
-      v-model="internalValue"
+
+    <!-- custom year picker -->
+    <select
+      v-else-if="type === 'year'"
+      :id="id"
       :disabled="disabled"
-      :min="min"
-      :max="max"
-      :placeholder="placeholder"
-      :style="inputStyle"
-      @change="updateValue"
-    />
-    <input
-      v-if="type === 'time'"
-      :id="inputId"
-      type="time"
-      :disabled="disabled"
-      v-model="internalValue"
-      :placeholder="placeholder"
-      :style="inputStyle"
-      @change="updateValue"
-    />
-    <input
-      v-if="type === 'datetime'"
-      :id="inputId"
-      type="datetime-local"
-      v-model="internalValue"
-      :disabled="disabled"
-      :min="min"
-      :max="max"
-      :placeholder="placeholder"
-      :style="inputStyle"
-      @change="updateValue"
-    />
-    <button
-      v-if="clearable && internalValue"
-      :disabled="disabled"
-      type="button"
-      @click="clear"
-      style="margin-left: 8px;"
-    >Clear</button>
+      :value="modelValue"
+      @change="$emit('update:modelValue', $event.target.value)"
+    >
+      <option value="">-- Select Year --</option>
+      <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+    </select>
+
+    <!-- custom monthYear picker -->
+    <div v-else-if="type === 'monthYear'" class="month-year-picker">
+      <select
+        :id="id + '-month'"
+        :disabled="disabled"
+        :value="selectedMonth"
+        @change="onMonthChange($event.target.value)"
+      >
+        <option value="">-- Month --</option>
+        <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+      </select>
+      <select
+        :id="id + '-year'"
+        :disabled="disabled"
+        :value="selectedYear"
+        @change="onYearChange($event.target.value)"
+      >
+        <option value="">-- Year --</option>
+        <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+      </select>
+    </div>
   </div>
 </template>
 
-<script setup lang="js">
-import { ref, watch, computed } from 'vue';
+<script setup>
+import { computed } from 'vue';
 
 const props = defineProps({
-  modelValue: { type: [String, Date], default: null },
-  type: { type: String, default: 'date' }, // 'date', 'datetime', 'time', 'month',
-  placeholder: { type: String, default: '' },
-  min: { type: String, default: null },
-  max: { type: String, default: null },
-  disabled: { type: Boolean, default: false },
-  clearable: { type: Boolean, default: true },
-  useNow: { type: Boolean, default: false }, 
+  id: String,
+  type: { type: String, required: true },
+  modelValue: String,
+  disabled: Boolean,
+  clearable: Boolean
 });
 
 const emit = defineEmits(['update:modelValue']);
 
-function getNowValue() {
-  const now = new Date();
-  if (props.type === 'date') return now.toISOString().slice(0, 10);
-  if (props.type === 'month') return now.toISOString().slice(0, 7);
-  if (props.type === 'time') return now.toTimeString().slice(0, 5);
-  if (props.type === 'datetime') {
-    const date = now.toISOString().slice(0, 16);
-    return date;
-  }
-  return '';
-}
-
-const internalValue = ref(props.modelValue);
-
-if (props.useNow && !props.modelValue) {
-  internalValue.value = getNowValue();
-  emit('update:modelValue', internalValue.value);
-}
-
-watch(() => props.modelValue, (val) => {
-  internalValue.value = val;
+const nativeType = computed(() => {
+  if (props.type === 'datetime') return 'datetime-local';
+  if (props.type === 'time') return 'time';
+  if (props.type === 'month') return 'month';
+  if (props.type === 'date') return 'date';
+  return 'text';
 });
 
-function updateValue(e) {
-  emit('update:modelValue', internalValue.value);
+const years = Array.from({ length: 51 }, (_, i) => new Date().getFullYear() - 25 + i);
+
+const selectedMonth = computed(() => {
+  if (!props.modelValue) return '';
+  const [m] = props.modelValue.split('/');
+  return m;
+});
+const selectedYear = computed(() => {
+  if (!props.modelValue) return '';
+  const [, y] = props.modelValue.split('/');
+  return y;
+});
+
+function onMonthChange(m) {
+  emit('update:modelValue', m && selectedYear.value ? `${m}/${selectedYear.value}` : '');
 }
-
-function clear() {
-  internalValue.value = '';
-  emit('update:modelValue', '');
+function onYearChange(y) {
+  emit('update:modelValue', selectedMonth.value && y ? `${selectedMonth.value}/${y}` : '');
 }
-
-const inputId = computed(() => `calendar-input-${Math.random().toString(36).slice(2, 10)}`);
-
-const inputStyle = 'max-width: 300px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;';
 </script>
+
+<style scoped>
+.calendar-wrapper {
+  display: flex;
+  gap: 8px;
+}
+.month-year-picker select {
+  padding: 4px 6px;
+}
+</style>

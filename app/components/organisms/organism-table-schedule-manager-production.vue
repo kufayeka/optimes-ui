@@ -73,7 +73,6 @@
       <molecules-molecule-popup-content-base>
         <template #content>
           <atoms-atom-base-wrapper max-width="100%" max-height="400px">
-            {{ _data_all_reference_data }}
             <molecules-molecule-form-create-generic debug :form-template="create_schedule_form_template" :initial-data="create_schedule_form_initial_data" v-model:formData="_data_created_schedule_data"/>
           </atoms-atom-base-wrapper>
         </template>
@@ -153,33 +152,40 @@ const {
 } = useScheduleManager2('schedule/production/*');
 
 const {
-  _data_all_reference_data
+  _data_all_reference_data: machine_list
 } = useReferenceManager('reference/entity/machine/*');
 
+const {
+  _data_all_reference_data: shift_list
+} = useReferenceManager('reference/work_shift/*');
 
 const edit_schedule_form_template = computed(() => [ 
   { key: 'id', label: 'Schedule ID', type: 'text', disabled: true }, 
   { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true }, 
   { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true }, 
-  { key: 'schedule_data.shift', label: 'Shift', type: 'text', required: true }, 
-  { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true }, 
-  { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true }, 
-  { key: 'schedule_data.routing', label: 'Routing', type: 'text', required: true }, 
+  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: shift_list.value, itemTitle: 'value.shift_name', itemValue: 'key' },
+  { key: 'schedule_data.routing', type: 'select', label: 'Routing', items: machine_list.value, itemTitle: 'value.machine_name', itemValue: 'key' },
+
+  { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true }, 
+  { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true }, 
+
   { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', min: 0, max: 9999999, required: true }, 
   { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true }, 
   { key: 'notes', label: 'Notes', type: 'textarea', required: false }, 
-  { key: 'created_on', label: 'Created On', type: 'datetime', required: true, isISOString: true, disabled: true  }, 
-  { key: 'updated_on', label: 'Updated On', type: 'datetime', required: true, isISOString: true, disabled: true  } 
+  { key: 'created_on', label: 'Created On', type: 'datetime', required: true, disabled: true  }, 
+  { key: 'updated_on', label: 'Updated On', type: 'datetime', required: true, disabled: true  } 
 ]); 
 
 const create_schedule_form_template = computed(() => [ 
   { key: 'id', label: 'Schedule ID', type: 'text', disabled: true }, 
   { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true }, 
   { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true }, 
-  { key: 'schedule_data.shift', label: 'Shift', type: 'text', required: true }, 
-  { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true }, 
-  { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true }, 
-  { key: 'schedule_data.routing', label: 'Routing', type: 'text', required: true }, 
+  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: shift_list.value, itemTitle: 'value.shift_name', itemValue: 'key' },
+  { key: 'schedule_data.routing', type: 'select', label: 'Routing', items: machine_list.value, itemTitle: 'value.machine_name', itemValue: 'key' },
+
+  { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true }, 
+  { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true }, 
+
   { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', min: 0, max: 9999999, required: true }, 
   { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true }, 
   { key: 'notes', label: 'Notes', type: 'textarea', required: false }
@@ -192,10 +198,10 @@ const create_schedule_form_initial_data = computed(() => {
   return {
     id: `schedule/production/${uuidv4()}`,
     schedule_category: 'production',
-    actual_finish_time: '',
-    actual_start_time: '',
-    planned_finish_time: '',
-    planned_start_time: '',
+    actual_finish_time: {},
+    actual_start_time: {},
+    planned_finish_time: {},
+    planned_start_time: {},
     schedule_data: {
       work_order_number: '',
       sales_order_number: '',
@@ -206,8 +212,8 @@ const create_schedule_form_initial_data = computed(() => {
     }, 
     schedule_status: 'planned',
     notes: 'no notes.',
-    created_on: '',
-    updated_on: '',
+    created_on: {},
+    updated_on: {},
   };
 });
 </script>

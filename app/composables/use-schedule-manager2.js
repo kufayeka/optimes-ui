@@ -44,6 +44,7 @@ export const useScheduleManager2 = (scheduleKey) => {
 
   const normalise_entry = entry => ({
     id: entry.key,
+    populated: entry.populated,
     ...entry.data
   });
 
@@ -131,7 +132,7 @@ export const useScheduleManager2 = (scheduleKey) => {
       apiServices.postREDisscheduleset({
         body: {
           ...data,
-          created_on: new Date().toISOString()
+          created_on: getNowObject()
         },
       })
     )();
@@ -152,7 +153,7 @@ export const useScheduleManager2 = (scheduleKey) => {
       apiServices.postREDisscheduleset({
         body: {
           ...data,
-          updated_on: new Date().toISOString()
+          updated_on: getNowObject()
         },
       })
     )();
@@ -185,13 +186,15 @@ export const useScheduleManager2 = (scheduleKey) => {
   };
 
   const pipe_execute_update_schedule_data = () => {
-    api_update_schedule_data(_data_modified_schedule_data.value);
+    const { populated, ...data } = _data_modified_schedule_data.value;
+    api_update_schedule_data(data);
     ui_command_popup_confirm_edit_schedule_data_close();
     ui_command_popup_edit_schedule_data_close();
   };
 
   const pipe_execute_delete_schedule_data = () => {
-    api_delete_schedule_data(_data_selected_schedule_data.value);
+    const { populated, ...data } = _data_selected_schedule_data.value;
+    api_delete_schedule_data(data);
     ui_command_popup_confirm_delete_schedule_data_close();
     ui_command_popup_view_schedule_data_close();
   };
@@ -251,3 +254,15 @@ export const useScheduleManager2 = (scheduleKey) => {
 
 // Utility function for delay
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const getNowObject = () => {
+  const now = new Date();
+  return {
+    date: now.getDate(),      
+    month: now.getMonth() + 1,
+    year: now.getFullYear(),
+    hour: now.getHours(),
+    minute: now.getMinutes(),
+    second: now.getSeconds()
+  };
+}

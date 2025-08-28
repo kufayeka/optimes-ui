@@ -45,7 +45,7 @@
         type="password"
         :disabled="field.disabled"
         :model-value="getValue(field)"
-        @update:modelValue="val => updateValue(field.key, sanitizeNumber(field, val))"
+        @update:modelValue="val => updateValue(field.key, val)"
       />
 
       <!-- SELECT -->
@@ -60,18 +60,15 @@
         @update:modelValue="val => updateValue(field.key, val)"
       />
 
-      <!-- DATE/TIME -->
+      <!-- CALENDAR -->
       <atoms-atom-base-calendar-native
-        v-else-if="['date', 'datetime', 'time', 'month'].includes(field.type)"
+        v-else-if="['datetime','date','time','month','year','monthYear'].includes(field.type)"
         :id="field.key"
         :type="field.type"
         :disabled="field.disabled"
-        :model-value="getValue(field)"
-        :min="field.min || null"
-        :max="field.max || null"
-        :use-now="field.useNow || false"
+        :model-value="getCalendarValue(field)"
         :clearable="field.clearable ?? true"
-        @update:modelValue="val => updateValue(field.key, val, field.type)"
+        @update:modelValue="val => updateCalendarValue(field.key, val, field.type)"
         class="mb-5"
       />
 
@@ -98,7 +95,7 @@
 
 <script setup>
 import { reactive } from 'vue';
-import { get, set, cloneDeep, merge } from 'lodash-es';
+import { get, set, cloneDeep } from 'lodash-es';
 
 const props = defineProps({
   debug: { type: Boolean, default: false },
@@ -110,66 +107,74 @@ const emit = defineEmits(['update:formData']);
 
 const formData = reactive(cloneDeep(props.initialData));
 
-function utcToLocal(utcVal, type) {
-  if (!utcVal) return '';
-  const date = new Date(utcVal);
-  if (isNaN(date)) return utcVal;
-
-  if (type === 'datetime') {
-    return date.toISOString().slice(0, 16);
-  } else if (type === 'date') {
-    return date.toISOString().slice(0, 10);
-  } else if (type === 'time') {
-    // ambil jam & menit lokal aja
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-  } else if (type === 'month') {
-    return date.toISOString().slice(0, 7);
-  }
-  return utcVal;
+/* Calendar Helpers */
+function parseToObj(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  return {
+    date: d.getDate(),
+    month: d.getMonth() + 1,
+    year: d.getFullYear(),
+    hour: d.getHours(),
+    minute: d.getMinutes(),
+    second: d.getSeconds()
+  };
 }
 
-function localToUtcIso(localStr, type) {
-  if (!localStr) return '';
-
-  if (type === 'datetime') {
-    const [datePart, timePart] = localStr.split('T');
-    const [y, m, d] = datePart.split('-').map(Number);
-    const [hh, mm] = timePart.split(':').map(Number);
-    return new Date(y, m - 1, d, hh, mm).toISOString();
-  } else if (type === 'date') {
-    const [y, m, d] = localStr.split('-').map(Number);
-    return new Date(y, m - 1, d).toISOString();
-  } else if (type === 'time') {
-    // biarin jadi "HH:MM" aja, jangan iso
-    return localStr;
-  } else if (type === 'month') {
-    const [y, m] = localStr.split('-').map(Number);
-    return new Date(y, m - 1, 1).toISOString();
+function formatFromObj(obj, type) {
+  if (!obj) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  switch (type) {
+    case 'datetime':
+      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}T${pad(obj.hour)}:${pad(obj.minute)}`;
+    case 'date':
+      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}`;
+    case 'time':
+      return `${pad(obj.hour)}:${pad(obj.minute)}:${pad(obj.second ?? 0)}`;
+    case 'month':
+      return `${obj.year}-${pad(obj.month)}`;
+    case 'year':
+      return `${obj.year}`;
+    case 'monthYear':
+      return `${pad(obj.month)}/${obj.year}`;
+    default:
+      return '';
   }
-  return localStr;
 }
 
-
-/* Fungsi getValue untuk mendapatkan nilai dari formData dan mengkonversi UTC ke lokal jika perlu */
-const getValue = (field) => {
-  const val = get(formData, field.key, '');
-  if (['datetime','date','time','month'].includes(field.type) && val) {
-    return utcToLocal(val, field.type);
-  }
-  return val;
+const getCalendarValue = (field) => {
+  const obj = get(formData, field.key, null);
+  return formatFromObj(obj, field.type);
 };
 
-/* Fungsi updateValue menerima parameter tambahan type untuk field tanggal */
-const updateValue = (key, value, type = null) => {
-  if (value && typeof value === 'string' && type && ['datetime','date','time','month'].includes(type)) {
-    set(formData, key, localToUtcIso(value, type));
+const updateCalendarValue = (key, val, type) => {
+  if (!val) {
+    set(formData, key, null);
   } else {
-    set(formData, key, value);
+    let d;
+    if (type === 'time') {
+      const [hh, mm, ss] = val.split(':').map(Number);
+      d = new Date();
+      d.setHours(hh, mm, ss || 0, 0);
+    } else if (type === 'year') {
+      d = new Date(Number(val), 0, 1);
+    } else if (type === 'monthYear') {
+      const [m, y] = val.split('/').map(Number);
+      d = new Date(y, m - 1, 1);
+    } else {
+      d = new Date(val);
+    }
+    set(formData, key, parseToObj(d));
   }
   emit('update:formData', cloneDeep(formData));
 };
 
-/* Fungsi untuk sanitasi angka, jika diperlukan */
+/* Common */
+const getValue = (field) => get(formData, field.key, '');
+const updateValue = (key, value) => {
+  set(formData, key, value);
+  emit('update:formData', cloneDeep(formData));
+};
 const sanitizeNumber = (field, val) => {
   if (val === '' || val === null) return '';
   let num = Number(val);

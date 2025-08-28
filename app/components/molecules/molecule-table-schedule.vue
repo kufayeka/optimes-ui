@@ -11,8 +11,8 @@
       <template v-slot:item="{ item }">
         <tr>
             <td>{{ item.id }}</td>
-            <td>{{ item.schedule_data?.shift }}</td>
-            <td>{{ item.schedule_data?.routing }}</td>
+            <td>{{ item.populated?.shift?.value?.shift_name }}</td>
+            <td>{{ item.populated?.routing?.value?.machine_name }}</td>
             <td><atoms-atom-base-chip>{{ item.schedule_data?.work_order_number }}</atoms-atom-base-chip></td>
             <td><atoms-atom-base-chip>{{ item.schedule_data?.sales_order_number }}</atoms-atom-base-chip></td>
             <td>{{ formatDateTime(item.planned_start_time) }}</td>
@@ -55,19 +55,47 @@ const headers = [
 ];
 
 const formatDateTime = (dateTime) => {
-    if (!dateTime) return '-';
-    try {
-        return new Date(dateTime).toLocaleString('id-ID', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-    } catch (error) {
-        return dateTime;
+  if (!dateTime) return '-';
+  try {
+    let d;
+
+    // Kalau object {year, month, date, ...}
+    if (
+      typeof dateTime === 'object' &&
+      dateTime.year &&
+      dateTime.month &&
+      dateTime.date
+    ) {
+      d = new Date(
+        dateTime.year,
+        (dateTime.month ?? 1) - 1,
+        dateTime.date ?? 1,
+        dateTime.hour ?? 0,
+        dateTime.minute ?? 0,
+        dateTime.second ?? 0
+      );
+    } else if (typeof dateTime === 'string' || dateTime instanceof Date) {
+      // Kalau string ISO atau Date object
+      d = new Date(dateTime);
+    } else {
+      return '-';
     }
+
+    if (isNaN(d.getTime())) return '-'; // jaga-jaga kalau tetep invalid
+
+    return d.toLocaleString('id-ID', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  } catch (error) {
+    return '-';
+  }
 };
+
+
 
 </script>

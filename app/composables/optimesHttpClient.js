@@ -34,7 +34,7 @@ export const apiServices = {
   postGetOneReference: ({ body: { key }, ...options }) => post(`/get-one-reference`, { key }, options),
   postCreateEventprocess: ({ body: { key, notes, scrap_flag, activities, material, ply, supplementary_flag }, ...options }) => post(`/create-event/process`, { key, notes, scrap_flag, activities, material, ply, supplementary_flag }, options),
   postUpdateEventprocess: ({ body: { notes, scrap_flag, activities, material, ply, operator_shift, loaded_schedule, machine_operator, supplementary_flag }, ...options }) => post(`/update-event/process`, { notes, scrap_flag, activities, material, ply, operator_shift, loaded_schedule, machine_operator, supplementary_flag }, options),
-  postREDisscheduleget: ({ body: { pattern }, ...options }) => post(`/REDis/schedule/get`, { pattern }, options),
+  postREDisscheduleget: ({ body: { pattern }, ...options }) => post(`/REDis/schedule/get-populated`, { pattern }, options),
   postREDisscheduleset: ({ body: { id, schedule_category, planned_start_time, planned_finish_time, schedule_status, actual_start_time, actual_finish_time, schedule_data, notes, created_on, updated_on }, ...options }) => post(`/REDis/schedule/set`, { id, schedule_category, planned_start_time, planned_finish_time, schedule_status, actual_start_time, actual_finish_time, schedule_data, notes, created_on, updated_on }, options),
   postREDisscheduleremove: ({ body: { pattern }, ...options }) => post(`/REDis/schedule/remove`, { pattern }, options),
 };

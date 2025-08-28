@@ -1,4 +1,3 @@
-<!-- src/components/molecules/molecules-molecule-form-edit-generic.vue -->
 <template>
   <div class="form-edit-generic">
     <div
@@ -70,26 +69,23 @@
         </label>
       </template>
 
-      <!-- DATE / TIME / MONTH / DATETIME -->
-      <template v-else-if="['date', 'month', 'time', 'datetime'].includes(field.type)">
+      <!-- CALENDAR -->
+      <template v-else-if="['date','datetime','time','month','year','monthYear'].includes(field.type)">
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
         <atoms-atom-base-calendar-native
           class="mb-5"
           :type="field.type"
           :disabled="field.disabled"
-          :model-value="getValue(field)"
-          :min="field.min || null"
-          :max="field.max || null"
-          :use-now="field.useNow || false"
+          :model-value="getCalendarValue(field)"
           :clearable="field.clearable ?? true"
-          @update:modelValue="updateValue(field.key, $event, field.type)"
+          @update:modelValue="updateCalendarValue(field.key, $event, field.type)"
         />
       </template>
 
       <!-- DROPDOWN GENERIC -->
       <template v-else-if="field.type === 'select'">
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
-        <atoms-atom-base-
+        <atoms-atom-base-select
           :disabled="field.disabled"   
           :model-value="getValue(field)"
           :items="field.items"
@@ -103,7 +99,6 @@
       <template v-else-if="field.type === 'array'">
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
         <div class="array-field d-flex flex-col justify-center">
-          <!-- Tampilkan elemen array -->
           <div v-for="(item, idx) in getValue(field)" :key="idx" class="d-flex flex-row">
             <atoms-atom-base-input
               class="mr-3"
@@ -115,7 +110,6 @@
             <v-btn color="red" variant="tonal" @click="removeArrayItem(field.key, idx)">Remove</v-btn>
           </div>
           <div class="d-flex flex-row justify-center">
-            <!-- Tombol untuk menambah elemen baru -->
             <v-btn class="w-33" color="primary" variant="tonal" @click="addArrayItem(field.key)">Add</v-btn>
           </div>
         </div>
@@ -137,70 +131,91 @@ const props = defineProps({
 
 const emit = defineEmits(['update:formUpdatedData']);
 
-function utcToLocal(utcVal, type) {
-  if (!utcVal) return '';
-  const date = new Date(utcVal);
-  if (isNaN(date)) return utcVal;
-
-  if (type === 'datetime') {
-    return date.toISOString().slice(0, 16);
-  } else if (type === 'date') {
-    return date.toISOString().slice(0, 10);
-  } else if (type === 'time') {
-    // ambil jam & menit lokal aja
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-  } else if (type === 'month') {
-    return date.toISOString().slice(0, 7);
-  }
-  return utcVal;
+/* Calendar Helpers */
+function parseToObj(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  return {
+    day: d.getDay(),
+    date: d.getDate(),
+    month: d.getMonth() + 1,
+    year: d.getFullYear(),
+    hour: d.getHours(),
+    minute: d.getMinutes(),
+    second: d.getSeconds()
+  };
 }
 
-function localToUtcIso(localStr, type) {
-  if (!localStr) return '';
-
-  if (type === 'datetime') {
-    const [datePart, timePart] = localStr.split('T');
-    const [y, m, d] = datePart.split('-').map(Number);
-    const [hh, mm] = timePart.split(':').map(Number);
-    return new Date(y, m - 1, d, hh, mm).toISOString();
-  } else if (type === 'date') {
-    const [y, m, d] = localStr.split('-').map(Number);
-    return new Date(y, m - 1, d).toISOString();
-  } else if (type === 'time') {
-    // biarin jadi "HH:MM" aja, jangan iso
-    return localStr;
-  } else if (type === 'month') {
-    const [y, m] = localStr.split('-').map(Number);
-    return new Date(y, m - 1, 1).toISOString();
+function formatFromObj(obj, type) {
+  if (!obj) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  switch (type) {
+    case 'datetime':
+      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}T${pad(obj.hour)}:${pad(obj.minute)}`;
+    case 'date':
+      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}`;
+    case 'time':
+      return `${pad(obj.hour)}:${pad(obj.minute)}:${pad(obj.second ?? 0)}`;
+    case 'month':
+      return `${obj.year}-${pad(obj.month)}`;
+    case 'year':
+      return `${obj.year}`;
+    case 'monthYear':
+      return `${pad(obj.month)}/${obj.year}`;
+    default:
+      return '';
   }
-  return localStr;
 }
 
-/* Fungsi getValue: Ambil nilai dari form data */
-const getValue = (field) => {
-  let value =
+/* Calendar Get/Update */
+const getCalendarValue = (field) => {
+  const obj =
     get(props.formUpdatedData, field.key) ??
     get(props.formInitialData, field.key) ??
-    (field.type === 'array' ? [] : '');
-  if (['datetime', 'date', 'time', 'month'].includes(field.type) && value && typeof value === 'string') {
-    return utcToLocal(value, field.type);
-  }
-  return value;
+    null;
+  return formatFromObj(obj, field.type);
 };
 
-/* Fungsi updateValue: Update form data */
-const updateValue = (key, value, type = null) => {
+const updateCalendarValue = (key, val, type) => {
   const mergedData = cloneDeep(props.formInitialData);
   merge(mergedData, props.formUpdatedData);
-  if (value && typeof value === 'string' && type && ['datetime', 'date', 'time', 'month'].includes(type)) {
-    set(mergedData, key, localToUtcIso(value, type));
+
+  if (!val) {
+    set(mergedData, key, null);
   } else {
-    set(mergedData, key, value);
+    let d;
+    if (type === 'time') {
+      const [hh, mm, ss] = val.split(':').map(Number);
+      d = new Date();
+      d.setHours(hh, mm, ss || 0, 0);
+    } else if (type === 'year') {
+      d = new Date(Number(val), 0, 1);
+    } else if (type === 'monthYear') {
+      const [m, y] = val.split('/').map(Number);
+      d = new Date(y, m - 1, 1);
+    } else {
+      d = new Date(val);
+    }
+    set(mergedData, key, parseToObj(d));
   }
+
   emit('update:formUpdatedData', mergedData);
 };
 
-/* Fungsi untuk sanitasi angka */
+/* Normal Get/Update */
+const getValue = (field) =>
+  get(props.formUpdatedData, field.key) ??
+  get(props.formInitialData, field.key) ??
+  (field.type === 'array' ? [] : '');
+
+const updateValue = (key, value) => {
+  const mergedData = cloneDeep(props.formInitialData);
+  merge(mergedData, props.formUpdatedData);
+  set(mergedData, key, value);
+  emit('update:formUpdatedData', mergedData);
+};
+
+/* Number sanitize */
 function sanitizeNumber(field, val) {
   if (val === '' || val === null) return '';
   let num = Number(val);
@@ -210,32 +225,30 @@ function sanitizeNumber(field, val) {
   return num;
 }
 
-/* Fungsi untuk menangani array: Update item di index tertentu */
+/* Array handlers */
 const updateArrayItem = (key, index, value) => {
   const mergedData = cloneDeep(props.formInitialData);
   merge(mergedData, props.formUpdatedData);
-  const array = get(mergedData, key, []).slice(); // Ambil salinan array
-  array[index] = value; // Update item
+  const array = get(mergedData, key, []).slice();
+  array[index] = value;
   set(mergedData, key, array);
   emit('update:formUpdatedData', mergedData);
 };
 
-/* Fungsi untuk menambahkan item baru ke array */
 const addArrayItem = (key) => {
   const mergedData = cloneDeep(props.formInitialData);
   merge(mergedData, props.formUpdatedData);
   const array = get(mergedData, key, []).slice();
-  array.push(''); // Tambah item baru (kosong)
+  array.push('');
   set(mergedData, key, array);
   emit('update:formUpdatedData', mergedData);
 };
 
-/* Fungsi untuk menghapus item dari array */
 const removeArrayItem = (key, index) => {
   const mergedData = cloneDeep(props.formInitialData);
   merge(mergedData, props.formUpdatedData);
   const array = get(mergedData, key, []).slice();
-  array.splice(index, 1); // Hapus item di index
+  array.splice(index, 1);
   set(mergedData, key, array);
   emit('update:formUpdatedData', mergedData);
 };
@@ -262,20 +275,5 @@ const removeArrayItem = (key, index) => {
   flex-direction: row;
   align-items: center;
   gap: 8px;
-}
-.remove-btn {
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.add-btn {
-  background-color: #1890ff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
 }
 </style>
