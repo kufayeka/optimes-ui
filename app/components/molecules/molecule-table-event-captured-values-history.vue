@@ -176,7 +176,7 @@ watch(
 let intervalId = null;
 onMounted(() => {
   getData();
-  intervalId = setInterval(getData, 5000);
+  // intervalId = setInterval(getData, 5000);
 });
 
 onUnmounted(() => {

@@ -1,7 +1,6 @@
 <template>
-  
   <molecules-molecule-chart-gantt-schedule 
-    :rawSchedules="_data_all_schedule"
+    :rawSchedules="_data_all_schedules"
     @refresh="pipe_execute_refresh_schedule"
     @selectedTask="_open_view_schedule"
   />

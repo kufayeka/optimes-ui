@@ -20,7 +20,7 @@ defineProps({
 
 <style scoped>
 .base-label {
-  font-size: 40px;
+  font-size: 36px;
   color: var(--v-theme-on-surface);
 }
 .bold {

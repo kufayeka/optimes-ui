@@ -1,37 +1,42 @@
 <template>
-  <!-- CAPTURED VALUE -->
-  <atoms-atom-base-label bold="true" class="mt-3">Unwind Paper Length</atoms-atom-base-label>
+  <atoms-atom-base-label bold="true" class="mt-3">Event Info</atoms-atom-base-label>
   <atoms-atom-data-display-col class="d-flex gap-2">
     <div class="d-flex flex-row justify-space-evenly">
-      <atoms-atom-base-chip size="x-large" variant="flat" :color="eventCapturedValuesData?.event_type.color">
-      <atoms-atom-base-label-xxxl>
-        {{ formatNumber(cm) }} cm
-      </atoms-atom-base-label-xxxl>
-      </atoms-atom-base-chip>
-      
-      <atoms-atom-base-chip size="x-large" variant="flat" :color="eventCapturedValuesData?.event_type.color">
-        <atoms-atom-base-label-xxxl>
-          {{ formatNumber(meter) }} m
-        </atoms-atom-base-label-xxxl>
-      </atoms-atom-base-chip>
-
-      <atoms-atom-base-chip size="x-large" variant="flat" :color="eventCapturedValuesData?.event_type.color">
-        <atoms-atom-base-label-xxxl>
-          {{ formatNumber(inch) }} inch
-        </atoms-atom-base-label-xxxl>
-      </atoms-atom-base-chip>
+      <v-btn size="small" variant="text" class="mx-1" :color="eventCapturedValuesData?.event_type?.color">
+        <atoms-atom-base-label bold="true">Event Name: {{ eventCapturedValuesData?.event_name }}</atoms-atom-base-label>
+      </v-btn>
     </div>
   </atoms-atom-data-display-col>
-  <!-- DURATION -->
-  <atoms-atom-base-label bold="true" class="mt-3">Event Information</atoms-atom-base-label>
-  <atoms-atom-data-display-col>
+  <atoms-atom-data-display-col class="d-flex gap-2">
     <div class="d-flex flex-row justify-space-evenly">
-      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">{{ eventCapturedValuesData?.event_name }}</atoms-atom-base-chip>
-      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">Total Duration: {{ duration }}</atoms-atom-base-chip>
-      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">Start Time: {{ formatDateTime(eventCapturedValuesData?.start_time) }}</atoms-atom-base-chip>
-      <atoms-atom-base-chip :color="eventCapturedValuesData?.event_type.color">End Time: {{ formatDateTime(eventCapturedValuesData?.end_time) }}</atoms-atom-base-chip>
+      <v-btn size="small" variant="text" class="mx-1" :color="eventCapturedValuesData?.event_type?.color">
+        <atoms-atom-base-label bold="true">Start Time: {{ formatDateTime(eventCapturedValuesData?.start_time) }}</atoms-atom-base-label>
+      </v-btn>
+      <v-btn size="small" variant="text" class="mx-1" :color="eventCapturedValuesData?.event_type?.color">
+        <atoms-atom-base-label bold="true">End Time: {{ formatDateTime(eventCapturedValuesData?.end_time) }}</atoms-atom-base-label>
+      </v-btn>
+      <v-btn size="small" variant="text" class="mx-1" :color="eventCapturedValuesData?.event_type?.color">
+        <atoms-atom-base-label bold="true">Duration: {{ duration }}</atoms-atom-base-label>
+      </v-btn>
     </div>
   </atoms-atom-data-display-col>
+
+  <!-- CAPTURED VALUE -->
+  <atoms-atom-base-label bold="true" class="mt-3">Unwind Roll - Paper Length</atoms-atom-base-label>
+  <atoms-atom-data-display-col class="d-flex gap-2">
+    <div class="d-flex flex-row justify-space-evenly">
+      <v-btn size="x-large" variant="flat" class="mx-1" :color="eventCapturedValuesData?.event_type?.color">
+        <atoms-atom-base-label-xl bold="true">{{ formatNumber(cm) }} centimeters</atoms-atom-base-label-xl>
+      </v-btn>
+      <v-btn size="x-large" variant="flat" class="mx-1" :color="eventCapturedValuesData?.event_type?.color">
+        <atoms-atom-base-label-xl bold="true">{{ formatNumber(meter) }} meters</atoms-atom-base-label-xl>
+      </v-btn>
+      <v-btn size="x-large" variant="flat" class="mx-1" :color="eventCapturedValuesData?.event_type?.color">
+        <atoms-atom-base-label-xl bold="true">{{ formatNumber(inch) }} inches</atoms-atom-base-label-xl>
+      </v-btn>
+    </div>
+  </atoms-atom-data-display-col>
+
 </template>
 
 <script setup>

@@ -12,20 +12,22 @@
       </v-tabs>
 
       <v-tabs-window v-model="tab">
-        <v-tabs-window-item v alue="schedule-overview">
+        <v-tabs-window-item value="schedule-overview">
           <v-card flat>
             <v-card-text>
               <organisms-organism-chart-gantt-ppic-schedule/>              
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
+
         <v-tabs-window-item value="schedules-manager">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-table-schedule-manager-ppic/>     
+              <organisms-organism-table-schedule-manager-production/>  
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
+        
         <v-tabs-window-item value="schedule-report">
           <v-card flat>
             <v-card-text>

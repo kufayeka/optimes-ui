@@ -1,7 +1,5 @@
 <template>
-  <molecules-molecule-form-section :title="'Captured Values (Counter)'">
-    
-  </molecules-molecule-form-section>
+  aggregate
 </template>
 
 <script setup>

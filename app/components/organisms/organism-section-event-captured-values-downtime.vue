@@ -1,5 +1,5 @@
 <template>
-  <molecules-molecule-table-event-captured-values/>
+  <p>captured downtime</p>
 </template>
 
 <script setup lang="js">

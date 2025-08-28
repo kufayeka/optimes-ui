@@ -78,6 +78,7 @@ const {
 const ui_edit_event_form_template = computed(() => [
   { key: 'event_attributes.activity_code', label: 'Activity Code', type: 'array', required: true },
   { key: 'event_attributes.material_code', label: 'Material Code / ID', type: 'text', required: true },
+  { key: 'event_attributes.ply', label: 'Ply', type: 'text', required: true },
   { key: 'event_attributes.notes', label: 'Notes', type: 'textarea', required: false },
   { key: 'event_attributes.scrap_flag', label: 'Scrap Flag', type: 'checkbox', required: false },
   { key: 'event_attributes.supplementary_flag', label: 'Supplementary Flag', type: 'checkbox', required: false },

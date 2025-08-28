@@ -1,7 +1,5 @@
 <template>
-  <molecules-molecule-form-section :title="'Captured Values (Aggregate)'">
-    
-  </molecules-molecule-form-section>
+  occurence
 </template>
 
 <script setup>

@@ -9,6 +9,7 @@
       <atoms-atom-base-input
         v-if="field.type === 'text'"
         :id="field.key"
+        :disabled="field.disabled"
         :placeholder="field.placeholder || ''"
         :model-value="getValue(field)"
         @update:modelValue="val => updateValue(field.key, val)"
@@ -19,6 +20,7 @@
         v-else-if="field.type === 'textarea'"
         :id="field.key"
         :rows="field.rows || 4"
+        :disabled="field.disabled"
         :placeholder="field.placeholder || ''"
         :model-value="getValue(field)"
         @update:modelValue="val => updateValue(field.key, val)"
@@ -29,6 +31,7 @@
         v-else-if="field.type === 'number'"
         :id="field.key"
         type="number"
+        :disabled="field.disabled"
         :min="field.min !== undefined ? field.min : null"
         :max="field.max !== undefined ? field.max : null"
         :model-value="getValue(field)"
@@ -40,6 +43,7 @@
         v-else-if="field.type === 'password'"
         :id="field.key"
         type="password"
+        :disabled="field.disabled"
         :model-value="getValue(field)"
         @update:modelValue="val => updateValue(field.key, sanitizeNumber(field, val))"
       />
@@ -50,6 +54,7 @@
         :id="field.key"
         :model-value="getValue(field)"
         :items="field.items"
+        :disabled="field.disabled"
         :item-title="field.itemTitle"
         :item-value="field.itemValue"
         @update:modelValue="val => updateValue(field.key, val)"
@@ -60,6 +65,7 @@
         v-else-if="['date', 'datetime', 'time', 'month'].includes(field.type)"
         :id="field.key"
         :type="field.type"
+        :disabled="field.disabled"
         :model-value="getValue(field)"
         :min="field.min || null"
         :max="field.max || null"
@@ -77,6 +83,7 @@
       >
         <input
           type="checkbox"
+          :disabled="field.disabled"
           :id="field.key"
           :checked="!!getValue(field)"
           @change="e => updateValue(field.key, e.target.checked)"
@@ -103,61 +110,45 @@ const emit = defineEmits(['update:formData']);
 
 const formData = reactive(cloneDeep(props.initialData));
 
-/* Helper untuk konversi UTC ke Local */
-/**
- * Mengonversi string UTC ISO ke format lokal sesuai tipe:
- * - datetime: "YYYY-MM-DDTHH:MM"
- * - date: "YYYY-MM-DD"
- * - time: "HH:MM"
- * - month: "YYYY-MM"
- */
 function utcToLocal(utcVal, type) {
   if (!utcVal) return '';
   const date = new Date(utcVal);
   if (isNaN(date)) return utcVal;
-  const tzOffset = date.getTimezoneOffset() * 60000;
-  const localDate = new Date(date.getTime() - tzOffset);
+
   if (type === 'datetime') {
-    return localDate.toISOString().slice(0, 16);
+    return date.toISOString().slice(0, 16);
   } else if (type === 'date') {
-    return localDate.toISOString().slice(0, 10);
+    return date.toISOString().slice(0, 10);
   } else if (type === 'time') {
-    return localDate.toISOString().slice(11, 16);
+    // ambil jam & menit lokal aja
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   } else if (type === 'month') {
-    return localDate.toISOString().slice(0, 7);
+    return date.toISOString().slice(0, 7);
   }
   return utcVal;
 }
 
-/* Helper untuk konversi nilai lokal ke UTC ISO string sesuai tipe */
 function localToUtcIso(localStr, type) {
   if (!localStr) return '';
+
   if (type === 'datetime') {
-    // localStr: "YYYY-MM-DDTHH:MM"
     const [datePart, timePart] = localStr.split('T');
     const [y, m, d] = datePart.split('-').map(Number);
     const [hh, mm] = timePart.split(':').map(Number);
-    const date = new Date(y, m - 1, d, hh, mm);
-    return date.toISOString();
+    return new Date(y, m - 1, d, hh, mm).toISOString();
   } else if (type === 'date') {
-    // localStr: "YYYY-MM-DD"
     const [y, m, d] = localStr.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-    return date.toISOString();
+    return new Date(y, m - 1, d).toISOString();
   } else if (type === 'time') {
-    // localStr: "HH:MM", ambil tanggal hari ini
-    const [hh, mm] = localStr.split(':').map(Number);
-    const now = new Date();
-    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm);
-    return date.toISOString();
+    // biarin jadi "HH:MM" aja, jangan iso
+    return localStr;
   } else if (type === 'month') {
-    // localStr: "YYYY-MM"
     const [y, m] = localStr.split('-').map(Number);
-    const date = new Date(y, m - 1, 1);
-    return date.toISOString();
+    return new Date(y, m - 1, 1).toISOString();
   }
   return localStr;
 }
+
 
 /* Fungsi getValue untuk mendapatkan nilai dari formData dan mengkonversi UTC ke lokal jika perlu */
 const getValue = (field) => {

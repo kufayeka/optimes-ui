@@ -1,17 +1,17 @@
 <template>
     <molecules-molecule-form-section :title="'Event Macro (Scheduled Downtime)'">
         <div class="d-flex flex-row w-100">
-            <v-btn
-                class="mx-5"
-                v-for="item in macroEventProcessReferences"
-                :key="item.id"
-                :color="item.value.color"
-                :value="item.id"
-                variant="elevated"
-                @click="handleCreateProcessEvent(item)"
-            >
-                {{ item.value.title }}
-            </v-btn>
+          <v-btn
+            class="mx-5"
+            v-for="item in macroEventProcessReferences"
+            :key="item.id"
+            :color="item.value.color"
+            :value="item.id"
+            variant="elevated"
+            @click="handleCreateProcessEvent(item)"
+          >
+              {{ item.value.title }}
+          </v-btn>
         </div>
         <molecules-molecule-form-dropdown-event-macro-process/>
         <molecules-molecule-form-dropdown-downtime-severity/>

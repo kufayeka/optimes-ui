@@ -10,14 +10,15 @@
       </template>
       <template v-slot:item="{ item }">
         <tr>
-            <td>{{ item.schedule_data?.shift_name?.title }}</td>
-            <td>{{ item.schedule_data?.routing_name?.title }}</td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.schedule_data?.shift }}</td>
+            <td>{{ item.schedule_data?.routing }}</td>
             <td><atoms-atom-base-chip>{{ item.schedule_data?.work_order_number }}</atoms-atom-base-chip></td>
             <td><atoms-atom-base-chip>{{ item.schedule_data?.sales_order_number }}</atoms-atom-base-chip></td>
             <td>{{ formatDateTime(item.planned_start_time) }}</td>
             <td>{{ formatDateTime(item.planned_finish_time) }}</td> 
-            <td>{{ formatDateTime(item.created_at) }}</td> 
-            <td>{{ formatDateTime(item.updated_at) }}</td> 
+            <td>{{ formatDateTime(item.created_on) }}</td> 
+            <td>{{ formatDateTime(item.updated_on) }}</td> 
             <td class="d-flex flex-row align-center justify-center">
                 <v-btn size="small" class="mx-1" color="warning" @click="emit('edit', item)">Edit</v-btn>
                 <v-btn size="small" class="mx-1" color="primary" @click="emit('view', item)">View</v-btn>
@@ -38,6 +39,7 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'view', 'delete'])
 
 const headers = [
+    { title: 'ID', key: 'id' },
     { title: 'Shift', key: 'schedule_data.shift' },
     { title: 'Routing', key: 'schedule_data.routing' },
     { title: 'Work Order', key: 'schedule_data.work_order_number' },

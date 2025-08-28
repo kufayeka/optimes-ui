@@ -5,6 +5,7 @@
       :id="inputId"
       type="date"
       v-model="internalValue"
+      :disabled="disabled"
       :min="min"
       :max="max"
       :placeholder="placeholder"
@@ -16,6 +17,7 @@
       :id="inputId"
       type="month"
       v-model="internalValue"
+      :disabled="disabled"
       :min="min"
       :max="max"
       :placeholder="placeholder"
@@ -26,6 +28,7 @@
       v-if="type === 'time'"
       :id="inputId"
       type="time"
+      :disabled="disabled"
       v-model="internalValue"
       :placeholder="placeholder"
       :style="inputStyle"
@@ -36,6 +39,7 @@
       :id="inputId"
       type="datetime-local"
       v-model="internalValue"
+      :disabled="disabled"
       :min="min"
       :max="max"
       :placeholder="placeholder"
@@ -44,6 +48,7 @@
     />
     <button
       v-if="clearable && internalValue"
+      :disabled="disabled"
       type="button"
       @click="clear"
       style="margin-left: 8px;"
@@ -60,6 +65,7 @@ const props = defineProps({
   placeholder: { type: String, default: '' },
   min: { type: String, default: null },
   max: { type: String, default: null },
+  disabled: { type: Boolean, default: false },
   clearable: { type: Boolean, default: true },
   useNow: { type: Boolean, default: false }, 
 });

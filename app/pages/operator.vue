@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="outlined">
+  <v-card>
     <v-toolbar>
       <template #title>
         <atoms-atom-base-label-lg :bold="true">Operator Dashboard</atoms-atom-base-label-lg>
@@ -8,15 +8,16 @@
           <organisms-organism-popup-display-selected-entity/>
           <organisms-organism-popup-display-loaded-schedule/>
       </template>
+      <template v-slot:extension>
+        <v-tabs v-model="tab" color="primary" direction="horizontal">
+          <v-tab prepend-icon="mdi-calendar" value="schedules">Schedules</v-tab>
+          <v-tab prepend-icon="mdi-factory" value="process">Process Events</v-tab>
+          <v-tab prepend-icon="mdi-clock-alert" value="downtime">Downtime Events</v-tab>
+        </v-tabs>
+      </template>
     </v-toolbar>
 
     <div class="d-flex flex-column">
-      <v-tabs v-model="tab" color="primary" direction="horizontal">
-        <v-tab prepend-icon="mdi-calendar" value="schedules">Schedules</v-tab>
-        <v-tab prepend-icon="mdi-factory" value="process">Process Events</v-tab>
-        <v-tab prepend-icon="mdi-clock-alert" value="downtime">Downtime Events</v-tab>
-      </v-tabs>
-      <atoms-atom-base-divider thickness="2"></atoms-atom-base-divider>
       <v-tabs-window v-model="tab">
         <v-tabs-window-item value="schedules">
           <v-card flat>

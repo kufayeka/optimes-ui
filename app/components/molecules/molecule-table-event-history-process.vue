@@ -22,7 +22,9 @@
             :disabled="item.end_time"
             :color="item.end_time ? 'gray' : 'orange'"
             @click="emit('endEvent', item)"
-          >End</v-btn>
+          >
+            End
+          </v-btn>
           <v-btn size="small" color="primary" class="mx-1" @click="emit('editEvent', item)">Edit</v-btn>
           <v-btn size="small" color="primary" class="mx-1" @click="emit('applyEvent', item)">Apply</v-btn>
         </td>

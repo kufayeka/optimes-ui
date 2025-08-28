@@ -57,9 +57,9 @@ const formattedValue = computed(() => {
   color: #333;
   word-break: break-word;
   padding: 5px 12px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  border: 1px solid #e9ecef;
+  background-color: #EEEEEE;
+  border-radius: 5px;
+  border: 1px solid #78909C;
 }
 
 /* For JSON objects */

@@ -10,6 +10,7 @@
       <template v-if="field.type === 'text'">
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
         <atoms-atom-base-input
+          :disabled="field.disabled"
           :placeholder="field.placeholder || ''"
           :model-value="getValue(field)"
           @update:modelValue="updateValue(field.key, $event)"
@@ -21,6 +22,7 @@
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
         <atoms-atom-base-input
           type="password"
+          :disabled="field.disabled"
           :placeholder="field.placeholder || ''"
           :model-value="getValue(field)"
           @update:modelValue="updateValue(field.key, $event)"
@@ -32,6 +34,7 @@
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
         <atoms-atom-base-textarea
           :placeholder="field.placeholder || ''"
+          :disabled="field.disabled"
           :rows="field.rows || 4"
           :model-value="getValue(field)"
           @update:modelValue="updateValue(field.key, $event)"
@@ -45,6 +48,7 @@
         </atoms-atom-base-label>
         <atoms-atom-base-input
           type="number"
+          :disabled="field.disabled"
           :placeholder="field.placeholder || ''"
           :min="field.min !== undefined ? field.min : null"
           :max="field.max !== undefined ? field.max : null"
@@ -57,6 +61,7 @@
       <template v-else-if="field.type === 'checkbox'">
         <label class="checkbox-field">
           <input
+            :disabled="field.disabled"
             type="checkbox"
             :checked="!!getValue(field)"
             @change="updateValue(field.key, $event.target.checked)"
@@ -71,6 +76,7 @@
         <atoms-atom-base-calendar-native
           class="mb-5"
           :type="field.type"
+          :disabled="field.disabled"
           :model-value="getValue(field)"
           :min="field.min || null"
           :max="field.max || null"
@@ -83,7 +89,8 @@
       <!-- DROPDOWN GENERIC -->
       <template v-else-if="field.type === 'select'">
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
-        <atoms-atom-base-select
+        <atoms-atom-base-
+          :disabled="field.disabled"   
           :model-value="getValue(field)"
           :items="field.items"
           :item-title="field.itemTitle"
@@ -100,6 +107,7 @@
           <div v-for="(item, idx) in getValue(field)" :key="idx" class="d-flex flex-row">
             <atoms-atom-base-input
               class="mr-3"
+              :disabled="field.disabled"
               :model-value="item"
               :placeholder="`Item ${idx + 1}`"
               @update:modelValue="updateArrayItem(field.key, idx, $event)"
@@ -129,47 +137,41 @@ const props = defineProps({
 
 const emit = defineEmits(['update:formUpdatedData']);
 
-/* Helper: Konversi UTC (ISO string) ke format lokal sesuai tipe */
 function utcToLocal(utcVal, type) {
   if (!utcVal) return '';
   const date = new Date(utcVal);
   if (isNaN(date)) return utcVal;
-  const tzOffset = date.getTimezoneOffset() * 60000;
-  const localDate = new Date(date.getTime() - tzOffset);
+
   if (type === 'datetime') {
-    return localDate.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+    return date.toISOString().slice(0, 16);
   } else if (type === 'date') {
-    return localDate.toISOString().slice(0, 10); // "YYYY-MM-DD"
+    return date.toISOString().slice(0, 10);
   } else if (type === 'time') {
-    return localDate.toISOString().slice(11, 16); // "HH:MM"
+    // ambil jam & menit lokal aja
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   } else if (type === 'month') {
-    return localDate.toISOString().slice(0, 7); // "YYYY-MM"
+    return date.toISOString().slice(0, 7);
   }
   return utcVal;
 }
 
-/* Helper: Konversi nilai lokal ke UTC ISO string sesuai tipe */
 function localToUtcIso(localStr, type) {
   if (!localStr) return '';
+
   if (type === 'datetime') {
     const [datePart, timePart] = localStr.split('T');
     const [y, m, d] = datePart.split('-').map(Number);
     const [hh, mm] = timePart.split(':').map(Number);
-    const date = new Date(y, m - 1, d, hh, mm);
-    return date.toISOString();
+    return new Date(y, m - 1, d, hh, mm).toISOString();
   } else if (type === 'date') {
     const [y, m, d] = localStr.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-    return date.toISOString();
+    return new Date(y, m - 1, d).toISOString();
   } else if (type === 'time') {
-    const [hh, mm] = localStr.split(':').map(Number);
-    const now = new Date();
-    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm);
-    return date.toISOString();
+    // biarin jadi "HH:MM" aja, jangan iso
+    return localStr;
   } else if (type === 'month') {
     const [y, m] = localStr.split('-').map(Number);
-    const date = new Date(y, m - 1, 1);
-    return date.toISOString();
+    return new Date(y, m - 1, 1).toISOString();
   }
   return localStr;
 }
