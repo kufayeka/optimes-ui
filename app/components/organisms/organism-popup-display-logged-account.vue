@@ -1,233 +1,156 @@
 <template>
-    <molecules-molecule-popup-information
-        :title="'Account Information'"
-        :open="popupOpen"
-        @close="popupOpen = false"
-        maxWidth="500"
-    >
-        <molecules-molecule-popup-content-base>
-            <template #content>
-                <molecules-molecule-data-display-account :account-data="accountData"/>
-            </template>
-            <template #actions>
-                <v-btn color="primary" variant="outlined" @click="popupOpenEditAccount = true">Edit</v-btn>
-                <v-btn color="red" variant="outlined" @click="popupOpenLogoutAccount = true">Log Out</v-btn>
-            </template>
-        </molecules-molecule-popup-content-base>
-    </molecules-molecule-popup-information>
+  <!-- POPUP: ACCOUNT INFORMATION -->
+  <molecules-molecule-popup-information
+    :open="_state_popup_view_account"
+    title="Account Information"
+    maxWidth="500"
+    @close="ui_command_popup_view_account_close"
+  >
+    <molecules-molecule-popup-content-base>
+      <template #content>
+        <molecules-molecule-data-display-account :accountData="_data_selected_account" />
+      </template>
+      <template #actions>
+        <v-btn variant="outlined" color="primary" @click="ui_command_popup_edit_account_open(_data_selected_account)">Edit</v-btn>
+        <v-btn variant="outlined" color="red" @click="pipe_execute_logout()">Log Out</v-btn>
+      </template>
+    </molecules-molecule-popup-content-base>
+  </molecules-molecule-popup-information>
 
-    <molecules-molecule-popup-edit
-        :title="'Edit Account'"
-        :open="popupOpenEditAccount"
-        @close="popupOpenEditAccount = false"
-        maxWidth="500">
-            <molecules-molecule-popup-content-base>
-                <template #content>
-                    <molecules-molecule-form-field-text
-                        v-model="editAccountForm.fullname"
-                        label="Full Name"
-                        type="text"
-                        :placeholder="'Enter your full name'"
-                        :bold="true"
-                    />
-                    <molecules-molecule-form-field-text
-                        v-model="editAccountForm.username"
-                        label="Username"
-                        type="text"
-                        :placeholder="'Enter your username'"
-                        :bold="true"
-                    />
-                    <molecules-molecule-form-field-text
-                        v-model="editAccountForm.password"
-                        label="Password"
-                        type="password"
-                        :placeholder="'Enter new password (optional)'"
-                        :bold="true"
-                    />
-            </template>
-            <template #actions>
-                <molecules-molecule-group-button-save-discard 
-                    @save="handleAccountUpdate()" 
-                    @discard="popupOpenEditAccount = false"
-                />
-            </template>
-        </molecules-molecule-popup-content-base>       
-    </molecules-molecule-popup-edit>
+  <!-- POPUP: EDIT ACCOUNT -->
+  <molecules-molecule-popup-edit
+    :open="_state_popup_edit_account"
+    title="Edit Account"
+    maxWidth="500"
+    @close="ui_command_popup_edit_account_close"
+  >
+    <molecules-molecule-popup-content-base>
+      <template #content>
+        <!-- Menggunakan form edit generik; silakan sesuaikan field sesuai kebutuhan -->
+        <molecules-molecule-form-edit-generic
+          :formTemplate="editAccountFormTemplate"
+          :formInitialData="editAccountFormInitialData"
+          v-model:formUpdatedData="_data_modified_account"
+        />
+      </template>
+      <template #actions>
+        <molecules-molecule-group-button-save-discard
+          @save="ui_command_popup_confirm_edit_account_open"
+          @discard="ui_command_popup_edit_account_close"
+        />
+      </template>
+    </molecules-molecule-popup-content-base>
+  </molecules-molecule-popup-edit>
 
-    <molecules-molecule-popup-confirmation
-        :title="'Logout Confirmation'"
-        :open="popupOpenLogoutAccount" 
-        @close="popupOpenLogoutAccount = false"
-        maxWidth="500">
-        <molecules-molecule-popup-content-base>
-            <template #content>
-                <atoms-atom-base-label>Are you sure you want to log out?</atoms-atom-base-label>
-            </template>
-            <template #actions>
-                <molecules-molecule-group-button-yes-no 
-                    @yes="handleLogout()" 
-                    @no="popupOpenLogoutAccount = false"
-                />
-            </template>
-        </molecules-molecule-popup-content-base>
-    </molecules-molecule-popup-confirmation>
+  <!-- POPUP: EDIT CONFIRMATION -->
+  <molecules-molecule-popup-confirmation
+    :open="_state_popup_confirm_edit_account"
+    title="Confirm Account Update"
+    maxWidth="500"
+    @close="ui_command_popup_confirm_edit_account_close"
+  >
+    <molecules-molecule-popup-content-base>
+      <template #content>
+        <atoms-atom-base-label>Are you sure you want to update your account details?</atoms-atom-base-label>
+      </template>
+      <template #actions>
+        <molecules-molecule-group-button-yes-no
+          @yes="pipe_execute_update_account"
+          @no="ui_command_popup_confirm_edit_account_close"
+        />
+      </template>
+    </molecules-molecule-popup-content-base>
+  </molecules-molecule-popup-confirmation>
 
-    <molecules-molecule-popup-success
-        :open="successMessage"
-        :title="'Success'"
-        @close="successMessage = false"
-        maxWidth="400"
-        >
-        <v-sheet class="pa-2">
-            <atoms-atom-base-label>{{ successMessage }}</atoms-atom-base-label>
-        </v-sheet>
-    </molecules-molecule-popup-success>
+  <!-- POPUP: SUCCESS -->
+  <molecules-molecule-popup-success
+    :open="_state_popup_success"
+    title="Success"
+    maxWidth="400"
+    @close="ui_command_popup_success_close"
+  >
+    <molecules-molecule-popup-content-base>
+      <template #content>
+        <pre>{{ _data_success_msg }}</pre>
+      </template>
+    </molecules-molecule-popup-content-base>
+  </molecules-molecule-popup-success>
 
-    <molecules-molecule-popup-error
-        :open="errorMessage"
-        :title="'Error'"
-        @close="errorMessage = false"
-        maxWidth="400"
-        >
-        <v-sheet class="pa-2">
-            <atoms-atom-base-label>{{ errorMessage }}</atoms-atom-base-label>
-        </v-sheet>
-    </molecules-molecule-popup-error>
+  <!-- POPUP: ERROR -->
+  <molecules-molecule-popup-error
+    :open="_state_popup_error"
+    title="Error"
+    maxWidth="400"
+    @close="ui_command_popup_error_close"
+  >
+    <molecules-molecule-popup-content-base>
+      <template #content>
+        <pre>{{ _data_error_msg }}</pre>
+      </template>
+    </molecules-molecule-popup-content-base>
+  </molecules-molecule-popup-error>
 
-    <v-btn 
-        class="mr-2" 
-        v-if="accountData"
-        prepend-icon="mdi-account-circle" 
-        variant="outlined" 
-        @click="popupOpen = !popupOpen"
-    >
-        Account ({{ username }})
-    </v-btn>
+  <!-- Tombol untuk membuka popup Account Information -->
+  <v-btn variant="outlined" prepend-icon="mdi-account-circle" @click="ui_command_popup_view_account_open(_data_selected_account)">
+    Account ({{ username }})
+  </v-btn>
 </template>
 
-<script setup lang="js">
-import { ref } from 'vue';
+<script setup>
+import { computed } from 'vue';
+import { useAccountManager } from '@/composables/use-account-manager';
 
-const popupOpen = ref(false);
-const popupOpenEditAccount = ref(false);
-const popupOpenLogoutAccount = ref(false);
+const {
+  _data_selected_account,
+  _data_modified_account,
+  _data_success_msg,
+  _data_error_msg,
+  _state_popup_error,
+  _state_popup_success,
+  _state_popup_view_account,
+  _state_popup_edit_account,
+  _state_popup_confirm_edit_account,
+  ui_command_popup_view_account_open,
+  ui_command_popup_view_account_close,
+  ui_command_popup_edit_account_open,
+  ui_command_popup_edit_account_close,
+  ui_command_popup_confirm_edit_account_open,
+  ui_command_popup_confirm_edit_account_close,
+  ui_command_popup_success_close,
+  ui_command_popup_error_close,
+  pipe_execute_update_account,
+  pipe_execute_logout
+} = useAccountManager();
 
-const successMessage = ref(null);
-const errorMessage = ref(null);
-
-const accountData = ref(null);
-const editAccountForm = reactive({
-  id: '',
-  fullname: '',
-  role: '',
-  username: '',
-  password: '',
-  status: ''
-});
-
-
+// computed property untuk menampilkan nama (fullname atau username)
 const username = computed(() => {
-  const name = accountData.value.fullname.trim();
+  const name = _data_selected_account.value.fullname || _data_selected_account.value.username || 'Account';
   return name.length > 10 ? name.slice(0, 10) + '…' : name;
 });
 
-watch(
-  () => accountData.value,
-  (val) => {
-    if (val) {
-      editAccountForm.id = accountData.value.id;
-      editAccountForm.fullname = accountData.value.fullname;
-      editAccountForm.role = accountData.value.role;
-      editAccountForm.username = accountData.value.username;
-      editAccountForm.password = '';
-      editAccountForm.status = accountData.value.status;
+// Form edit account: sesuaikan field yang diperlukan
+const editAccountFormTemplate = computed(() => [
+  { key: 'raw.key', label: 'Key', type: 'text', disabled: true },
+{ key: 'raw.id', label: 'Account ID', type: 'text', disabled: true },
+  { key: 'raw.username', label: 'Username', type: 'text', required: true },
+  { key: 'raw.password', label: 'Password', type: 'password', required: false },
+]);
+
+// Set form initial data berdasarkan account yang sedang dipilih
+const editAccountFormInitialData = computed(() => {
+  const acc = _data_selected_account.value;
+  if (!acc || Object.keys(acc).length === 0) return {};
+  return {
+    // Menggunakan prefix raw. agar konsisten dengan key pada formTemplate
+    raw: {
+      key: acc.key,
+      id: acc.id,
+      username: acc.username,
+      fullname: acc.fullname,
+      password: '', // kosongkan password bila tidak ingin diubah
+      role: acc.role,
+      status: acc.status
     }
-  }
-);
-
-
-const getAccountData = async () => {
-    try {
-        const headers = useRequestHeaders(['cookie']);
-        const cookies = headers.cookie || '';
-        const response = await apiServices.getAccountValidate({
-          headers: cookies
-          ? { cookie: cookies } 
-          : undefined,
-        });
-
-        accountData.value = response.data;
-
-        console.log('✅ Access granted for role:', response.data.username);
-        return;
-
-    } catch (err) {
-        console.error('Error getAccountData:', err);
-    }
-};
-
-const handleAccountUpdate = async () => {
-  errorMessage.value = '';
-  successMessage.value = '';
-
-  // Simple validation
-  if (!editAccountForm.fullname || !editAccountForm.username || !editAccountForm.role) {
-    errorMessage.value = 'Full name, username, and role are required.';
-    return;
-  }
-
-  try {
-    // Build request body
-    const reqBody = {
-      fullname: editAccountForm.fullname,
-      role: editAccountForm.role,
-      username: editAccountForm.username,
-      password: editAccountForm.password,
-      status: editAccountForm.status
-    };
-
-    const response = await apiServices.putAccountUpdate({
-      body: reqBody,
-      params: {
-        accountId: editAccountForm.id
-      }
-    });
-
-    if (response.success) {
-      successMessage.value = 'Account updated successfully!';
-      errorMessage.value = null;
-
-      window.location.reload();
-      return
-    } else {
-      errorMessage.value = response.message || 'Failed to update account.';
-      successMessage.value = null;
-    }
-  } catch (err) {
-    errorMessage.value = err?.message || 'Error updating account.';
-    successMessage.value = null;
-  }
-};
-
-
-const handleLogout = () => {
-  apiServices.postAccountLogout({})
-    .then(() => {
-      window.location.href = '/login';
-    })
-    .catch((error) => {
-      console.error('Logout failed:', error);
-    });
-};
-
-
-onMounted(() => {
-    getAccountData();
+  };
 });
-
-onUnmounted(() => {
-// if (chart.value) chart.value.destroy();
-});
-
-
 </script>

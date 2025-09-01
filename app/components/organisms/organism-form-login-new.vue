@@ -42,9 +42,14 @@
           :rules="passwordRules"
           :bold="true"
         />
-        <molecules-molecule-form-dropdown-account-role v-model="form.role"/>
-        <molecules-molecule-form-dropdown-shift v-model="form.selectedShiftId"/>
-        <molecules-molecule-form-dropdown-machine v-model="form.selectedEntityId"/>
+        <molecules-molecule-form-field-text
+          v-model="form.role"
+          label="Role"
+          type="username"
+          :placeholder="'Enter your role'"
+          :rules="passwordRules"
+          :bold="true"
+        />
         <v-row class="flex-row ga-3 justify-space-evenly">
           <atoms-atom-base-button @click="handleLogin">Login</atoms-atom-base-button>
         </v-row>
@@ -54,6 +59,7 @@
 
 <script setup lang="js">
 import { reactive, ref } from 'vue';
+import { apiServicesNew } from '@/composables/optimesHttpClient2';
 
 
 // Form state
@@ -61,8 +67,6 @@ const form = reactive({
   username: null,
   password: null,
   role: null,
-  selectedShiftId: null,
-  selectedEntityId: null,
 });
 
 const errorMessage = ref(null);
@@ -121,13 +125,11 @@ const handleLogin = async () => {
   }
 
   try {
-    const response = await apiServices.postAccountLogin({
+    const response = await apiServicesNew.post_REDis_entity_account_login({
       body: {
         username: form.username,
         password: form.password,
         role: form.role,
-        selectedEntityId: form.selectedEntityId,
-        selectedShiftId: form.selectedShiftId,
       }
     });
     console.log(response);

@@ -5,8 +5,7 @@
         <atoms-atom-base-label-lg :bold="true">Operator Dashboard</atoms-atom-base-label-lg>
       </template>
       <template #append>
-          <organisms-organism-popup-display-selected-entity/>
-          <organisms-organism-popup-display-loaded-schedule/>
+          loaded
       </template>
       <template v-slot:extension>
         <v-tabs v-model="tab" color="primary" direction="horizontal">
@@ -21,24 +20,20 @@
       <v-tabs-window v-model="tab">
         <v-tabs-window-item value="schedules">
           <v-card flat>
-            <organisms-organism-chart-gantt-entity-schedule/>
+
           </v-card>
         </v-tabs-window-item>
         <v-tabs-window-item value="process">
           <v-card flat>
              <v-card-text>
-                <organisms-organism-section-event-macro-process :active="tab === 'process'" />
-                <organisms-organism-section-event-captured-values-process/>
-                <organisms-organism-section-entity-event-history-process/>
+                
              </v-card-text>
           </v-card>
         </v-tabs-window-item>
         <v-tabs-window-item value="downtime">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-section-event-macro-downtime :active="tab === 'downtime'" />
-              <organisms-organism-section-event-captured-values-process/>
-              <organisms-organism-section-entity-event-history-process/>              
+                       
             </v-card-text>
           </v-card>
         </v-tabs-window-item>

@@ -1,12 +1,14 @@
 
+import { apiServicesNew } from '@/composables/optimesHttpClient2';
+
 export default defineNuxtRouteMiddleware(async (to) => {
-  const expectedRole = 'b2c8916e-9f9b-4d3d-8132-d397444ff17f'; // ppic role ID
+  const expectedRole = 'ppic'; // ppic role ID
 
 
   try {
     const headers = useRequestHeaders(['cookie']);
     const cookies = headers.cookie || '';
-    const response = await apiServices.getAccountValidate({
+    const response = await apiServicesNew.get_REDis_entity_account_validate({
       headers: cookies
       ? { cookie: cookies } 
       : undefined,

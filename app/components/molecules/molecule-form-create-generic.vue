@@ -60,17 +60,20 @@
         @update:modelValue="val => updateValue(field.key, val)"
       />
 
-      <!-- CALENDAR -->
-      <atoms-atom-base-calendar-native
-        v-else-if="['datetime','date','time','month','year','monthYear'].includes(field.type)"
-        :id="field.key"
-        :type="field.type"
-        :disabled="field.disabled"
-        :model-value="getCalendarValue(field)"
-        :clearable="field.clearable ?? true"
-        @update:modelValue="val => updateCalendarValue(field.key, val, field.type)"
-        class="mb-5"
-      />
+      <!-- CALENDAR (native inputs) -->
+      <div
+        v-else-if="['datetime','date','time'].includes(field.type)"
+        class="calendar-field"
+      >
+        <input
+          class="native-calendar"
+          :id="field.key"
+          :type="field.type === 'datetime' ? 'datetime-local' : field.type"
+          :disabled="field.disabled"
+          :value="getCalendarValue(field, field.type)"
+          @input="val => updateCalendarValue(field.key, val.target.value, field.type)"
+        />
+      </div>
 
       <!-- CHECKBOX -->
       <label
@@ -104,67 +107,44 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:formData']);
-
 const formData = reactive(cloneDeep(props.initialData));
 
-/* Calendar Helpers */
-function parseToObj(date) {
-  if (!date) return null;
-  const d = new Date(date);
-  return {
-    date: d.getDate(),
-    month: d.getMonth() + 1,
-    year: d.getFullYear(),
-    hour: d.getHours(),
-    minute: d.getMinutes(),
-    second: d.getSeconds()
-  };
-}
+/* Calendar Get */
+const getCalendarValue = (field, type) => {
+  const val = get(formData, field.key, null);
+  if (!val) return '';
 
-function formatFromObj(obj, type) {
-  if (!obj) return '';
+  const d = new Date(val);
+  if (isNaN(d)) return '';
+
   const pad = (n) => String(n).padStart(2, '0');
+
   switch (type) {
     case 'datetime':
-      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}T${pad(obj.hour)}:${pad(obj.minute)}`;
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     case 'date':
-      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}`;
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     case 'time':
-      return `${pad(obj.hour)}:${pad(obj.minute)}:${pad(obj.second ?? 0)}`;
-    case 'month':
-      return `${obj.year}-${pad(obj.month)}`;
-    case 'year':
-      return `${obj.year}`;
-    case 'monthYear':
-      return `${pad(obj.month)}/${obj.year}`;
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
     default:
       return '';
   }
-}
-
-const getCalendarValue = (field) => {
-  const obj = get(formData, field.key, null);
-  return formatFromObj(obj, field.type);
 };
 
+/* Calendar Update */
 const updateCalendarValue = (key, val, type) => {
   if (!val) {
     set(formData, key, null);
   } else {
     let d;
     if (type === 'time') {
-      const [hh, mm, ss] = val.split(':').map(Number);
+      const [hh, mm] = val.split(':').map(Number);
       d = new Date();
-      d.setHours(hh, mm, ss || 0, 0);
-    } else if (type === 'year') {
-      d = new Date(Number(val), 0, 1);
-    } else if (type === 'monthYear') {
-      const [m, y] = val.split('/').map(Number);
-      d = new Date(y, m - 1, 1);
+      d.setHours(hh, mm, 0, 0);
     } else {
       d = new Date(val);
     }
-    set(formData, key, parseToObj(d));
+    set(formData, key, d.toISOString()); // simpan sebagai ISO string
   }
   emit('update:formData', cloneDeep(formData));
 };
@@ -194,11 +174,21 @@ const sanitizeNumber = (field, val) => {
 .form-field-wrapper {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 .checkbox-field {
   display: flex;
   align-items: center;
   gap: 5px;
   font-weight: 600;
+}
+.calendar-field {
+  display: flex;
+  flex-direction: column;
+}
+.native-calendar {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 </style>

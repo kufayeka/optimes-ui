@@ -1,5 +1,5 @@
 <template>
-    <organisms-organism-form-login></organisms-organism-form-login>
+    <organisms-organism-form-login-new></organisms-organism-form-login-new>
 </template>
 
 <script setup lang="js">

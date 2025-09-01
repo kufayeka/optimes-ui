@@ -10,15 +10,15 @@
       </template>
       <template v-slot:item="{ item }">
         <tr>
-            <td>{{ item.id }}</td>
-            <td>{{ item.populated?.shift?.value?.shift_name }}</td>
-            <td>{{ item.populated?.routing?.value?.machine_name }}</td>
-            <td><atoms-atom-base-chip>{{ item.schedule_data?.work_order_number }}</atoms-atom-base-chip></td>
-            <td><atoms-atom-base-chip>{{ item.schedule_data?.sales_order_number }}</atoms-atom-base-chip></td>
-            <td>{{ formatDateTime(item.planned_start_time) }}</td>
-            <td>{{ formatDateTime(item.planned_finish_time) }}</td> 
-            <td>{{ formatDateTime(item.created_on) }}</td> 
-            <td>{{ formatDateTime(item.updated_on) }}</td> 
+            <td>{{ item.raw.id }}</td>
+            <td>{{ item.populated?.shift }}</td>
+            <td>{{ item.populated?.routing }}</td>
+            <td><atoms-atom-base-chip>{{ item.raw.work_order }}</atoms-atom-base-chip></td>
+            <td><atoms-atom-base-chip>{{ item.raw.sales_order }}</atoms-atom-base-chip></td>
+            <td>{{ formatDateTime(item.raw.planned_start_time) }}</td>
+            <td>{{ formatDateTime(item.raw.planned_finish_time) }}</td> 
+            <td>{{ formatDateTime(item.raw.created_on) }}</td> 
+            <td>{{ formatDateTime(item.raw.updated_on) }}</td> 
             <td class="d-flex flex-row align-center justify-center">
                 <v-btn size="small" class="mx-1" color="warning" @click="emit('edit', item)">Edit</v-btn>
                 <v-btn size="small" class="mx-1" color="primary" @click="emit('view', item)">View</v-btn>
@@ -59,7 +59,6 @@ const formatDateTime = (dateTime) => {
   try {
     let d;
 
-    // Kalau object {year, month, date, ...}
     if (
       typeof dateTime === 'object' &&
       dateTime.year &&
@@ -67,34 +66,40 @@ const formatDateTime = (dateTime) => {
       dateTime.date
     ) {
       d = new Date(
-        dateTime.year,
-        (dateTime.month ?? 1) - 1,
-        dateTime.date ?? 1,
-        dateTime.hour ?? 0,
-        dateTime.minute ?? 0,
-        dateTime.second ?? 0
+        Date.UTC(
+          dateTime.year,
+          (dateTime.month ?? 1) - 1,
+          dateTime.date ?? 1,
+          dateTime.hour ?? 0,
+          dateTime.minute ?? 0,
+          dateTime.second ?? 0
+        )
       );
     } else if (typeof dateTime === 'string' || dateTime instanceof Date) {
-      // Kalau string ISO atau Date object
       d = new Date(dateTime);
     } else {
       return '-';
     }
 
-    if (isNaN(d.getTime())) return '-'; // jaga-jaga kalau tetep invalid
+    if (isNaN(d.getTime())) return '-';
 
-    return d.toLocaleString('id-ID', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
+    const pad = (n) => String(n).padStart(2, '0');
+
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+
+    const hh = pad(d.getHours());
+    const min = pad(d.getMinutes());
+    const ss = pad(d.getSeconds());
+
+    return `${dd}-${mm}-${yyyy} ${hh}:${min}:${ss}`;
+
   } catch (error) {
     return '-';
   }
 };
+
 
 
 

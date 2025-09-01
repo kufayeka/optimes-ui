@@ -69,24 +69,25 @@
         </label>
       </template>
 
-      <!-- CALENDAR -->
-      <template v-else-if="['date','datetime','time','month','year','monthYear'].includes(field.type)">
-        <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
-        <atoms-atom-base-calendar-native
-          class="mb-5"
-          :type="field.type"
-          :disabled="field.disabled"
-          :model-value="getCalendarValue(field)"
-          :clearable="field.clearable ?? true"
-          @update:modelValue="updateCalendarValue(field.key, $event, field.type)"
-        />
+      <!-- CALENDAR (native inputs) -->
+      <template v-else-if="['date','datetime','time'].includes(field.type)">
+        <div class="calendar-field">
+            <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
+            <input
+              class="native-calendar"
+              :type="field.type === 'datetime' ? 'datetime-local' : field.type"
+              :disabled="field.disabled"
+              :value="getCalendarValue(field, field.type)"
+              @input="updateCalendarValue(field.key, $event.target.value, field.type)"
+            />
+          </div>
       </template>
 
       <!-- DROPDOWN GENERIC -->
       <template v-else-if="field.type === 'select'">
         <atoms-atom-base-label :bold="true">{{ field.label }}</atoms-atom-base-label>
         <atoms-atom-base-select
-          :disabled="field.disabled"   
+          :disabled="field.disabled"
           :model-value="getValue(field)"
           :items="field.items"
           :item-title="field.itemTitle"
@@ -117,13 +118,16 @@
 
       <v-divider class="my-2"/>
     </div>
+    <pre v-if="debug">Current Data: {{ formData }}</pre>
   </div>
 </template>
 
 <script setup>
 import { get, set, cloneDeep, merge } from 'lodash-es';
+import { computed } from 'vue';
 
 const props = defineProps({
+  debug: { type: Boolean, default: false },
   formTemplate: { type: Array, required: true },
   formInitialData: { type: Object, default: () => ({}) },
   formUpdatedData: { type: Object, required: true },
@@ -131,51 +135,35 @@ const props = defineProps({
 
 const emit = defineEmits(['update:formUpdatedData']);
 
-/* Calendar Helpers */
-function parseToObj(date) {
-  if (!date) return null;
-  const d = new Date(date);
-  return {
-    day: d.getDay(),
-    date: d.getDate(),
-    month: d.getMonth() + 1,
-    year: d.getFullYear(),
-    hour: d.getHours(),
-    minute: d.getMinutes(),
-    second: d.getSeconds()
-  };
-}
+// Gunakan computed property supaya data debug live sesuai update yang di‑emit
+const formData = computed(() => props.formUpdatedData);
 
-function formatFromObj(obj, type) {
-  if (!obj) return '';
-  const pad = (n) => String(n).padStart(2, '0');
-  switch (type) {
-    case 'datetime':
-      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}T${pad(obj.hour)}:${pad(obj.minute)}`;
-    case 'date':
-      return `${obj.year}-${pad(obj.month)}-${pad(obj.date)}`;
-    case 'time':
-      return `${pad(obj.hour)}:${pad(obj.minute)}:${pad(obj.second ?? 0)}`;
-    case 'month':
-      return `${obj.year}-${pad(obj.month)}`;
-    case 'year':
-      return `${obj.year}`;
-    case 'monthYear':
-      return `${pad(obj.month)}/${obj.year}`;
-    default:
-      return '';
-  }
-}
-
-/* Calendar Get/Update */
-const getCalendarValue = (field) => {
-  const obj =
+/* Calendar Get */
+const getCalendarValue = (field, type) => {
+  const val =
     get(props.formUpdatedData, field.key) ??
     get(props.formInitialData, field.key) ??
     null;
-  return formatFromObj(obj, field.type);
+  if (!val) return '';
+
+  const d = new Date(val);
+  if (isNaN(d)) return '';
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  switch (type) {
+    case 'datetime':
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    case 'date':
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    case 'time':
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    default:
+      return '';
+  }
 };
 
+/* Calendar Update */
 const updateCalendarValue = (key, val, type) => {
   const mergedData = cloneDeep(props.formInitialData);
   merge(mergedData, props.formUpdatedData);
@@ -185,18 +173,13 @@ const updateCalendarValue = (key, val, type) => {
   } else {
     let d;
     if (type === 'time') {
-      const [hh, mm, ss] = val.split(':').map(Number);
+      const [hh, mm] = val.split(':').map(Number);
       d = new Date();
-      d.setHours(hh, mm, ss || 0, 0);
-    } else if (type === 'year') {
-      d = new Date(Number(val), 0, 1);
-    } else if (type === 'monthYear') {
-      const [m, y] = val.split('/').map(Number);
-      d = new Date(y, m - 1, 1);
+      d.setHours(hh, mm, 0, 0);
     } else {
       d = new Date(val);
     }
-    set(mergedData, key, parseToObj(d));
+    set(mergedData, key, d.toISOString());
   }
 
   emit('update:formUpdatedData', mergedData);
@@ -255,6 +238,12 @@ const removeArrayItem = (key, index) => {
 </script>
 
 <style scoped>
+.calendar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .form-edit-generic {
   display: flex;
   flex-direction: column;
@@ -275,5 +264,10 @@ const removeArrayItem = (key, index) => {
   flex-direction: row;
   align-items: center;
   gap: 8px;
+}
+.native-calendar {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 </style>

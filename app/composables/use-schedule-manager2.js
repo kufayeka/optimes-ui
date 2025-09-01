@@ -1,7 +1,7 @@
 // composables/use-schedule-manager.js
 import { ref, onMounted } from 'vue';
 import * as R from 'ramda';
-import { apiServices } from './optimesHttpClient';
+import { apiServicesNew } from './optimesHttpClient2';
 
 export const useScheduleManager2 = (scheduleKey) => {
   // State
@@ -39,13 +39,11 @@ export const useScheduleManager2 = (scheduleKey) => {
     refVar.value = R.defaultTo('No message.', val);
   });
 
-  const extract_data = R.propOr([], 'entries');
+  const extract_data = R.propOr([], 'data');
   const extract_error_data = R.propOr('Unknown error', 'message');
 
   const normalise_entry = entry => ({
-    id: entry.key,
-    populated: entry.populated,
-    ...entry.data
+    ...entry
   });
 
 
@@ -109,11 +107,7 @@ export const useScheduleManager2 = (scheduleKey) => {
         ui_command_popup_error_open
       )
     )(() =>
-      apiServices.postREDisscheduleget({
-        body: {
-          pattern: scheduleKey
-        }
-      })
+      apiServicesNew.get_REDis_schedule_getAll({})
     )();
 
   const api_create_schedule_data = (data) =>
@@ -129,18 +123,17 @@ export const useScheduleManager2 = (scheduleKey) => {
         ui_command_popup_error_open
       )
     )(() =>
-      apiServices.postREDisscheduleset({
+      apiServicesNew.post_REDis_schedule_create({
         body: {
           ...data,
-          created_on: getNowObject()
-        },
+        }
       })
     )();
 
   const api_update_schedule_data = (data) =>
     pipe_process_api_response(
       R.pipe(
-        () => set_string(_data_success_msg, 'schedule data updated successfully.'),
+        () => set_string(_data_success_msg, 'Schedule data updated successfully.'),
         ui_command_popup_success_open,
         () => delay(1000).then(api_get_all_schedule_data)
       ),
@@ -150,11 +143,10 @@ export const useScheduleManager2 = (scheduleKey) => {
         ui_command_popup_error_open
       )
     )(() =>
-      apiServices.postREDisscheduleset({
+      apiServicesNew.put_REDis_schedule_update({
         body: {
           ...data,
-          updated_on: getNowObject()
-        },
+        }
       })
     )();
 
@@ -171,9 +163,9 @@ export const useScheduleManager2 = (scheduleKey) => {
         ui_command_popup_error_open
       )
     )(() =>
-      apiServices.postREDisscheduleremove({
+      apiServicesNew.post_REDis_schedule_delete({
         body: {
-          pattern: data.id
+          key: data.key,
         }
       })
     )();
@@ -186,15 +178,15 @@ export const useScheduleManager2 = (scheduleKey) => {
   };
 
   const pipe_execute_update_schedule_data = () => {
-    const { populated, ...data } = _data_modified_schedule_data.value;
-    api_update_schedule_data(data);
+    const { populated, ...raw } = _data_modified_schedule_data.value;
+    api_update_schedule_data(raw.raw);
     ui_command_popup_confirm_edit_schedule_data_close();
     ui_command_popup_edit_schedule_data_close();
   };
 
   const pipe_execute_delete_schedule_data = () => {
-    const { populated, ...data } = _data_selected_schedule_data.value;
-    api_delete_schedule_data(data);
+    const { populated, raw } = _data_selected_schedule_data.value;
+    api_delete_schedule_data(raw);
     ui_command_popup_confirm_delete_schedule_data_close();
     ui_command_popup_view_schedule_data_close();
   };

@@ -1,11 +1,13 @@
 
+import { apiServicesNew } from '@/composables/optimesHttpClient2';
+
 export default defineNuxtRouteMiddleware(async (to) => {
   const accountRoleReferenceId = {
-    system_administrator: '3603e39e-602a-475e-8275-97c30554b8c9',
-    ppic: 'b2c8916e-9f9b-4d3d-8132-d397444ff17f',
-    operator: 'a8071b9d-3229-4354-805a-abb48f925f57',
-    maintenance: '6c158410-0823-45f1-aa14-4bbfb3bf517e',
-    head_of_maintenance: 'ee811716-5d5c-49d0-a2be-8fc6e0fe49d3',
+    system_administrator: 'admin',
+    ppic: 'ppic',
+    operator: 'operator',
+    maintenance: 'maintenance',
+    head_of_maintenance: 'head_of_maintenance',
   };
 
   const roleRouteMap = {
@@ -20,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const headers = useRequestHeaders(['cookie']);
     const cookies = headers.cookie || '';
 
-    const response = await apiServices.getAccountValidate({
+    const response = await apiServicesNew.get_REDis_entity_account_validate({
       headers: cookies
       ? { cookie: cookies } 
       : undefined,

@@ -25,7 +25,6 @@
         <v-tabs-window-item value="event-macro-process-manager">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-table-reference-manager-event-macro-process/>
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
@@ -33,7 +32,6 @@
         <v-tabs-window-item value="event-macro-downtime-manager">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-table-reference-manager-event-macro-downtime/>
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
@@ -41,7 +39,6 @@
         <v-tabs-window-item value="entity-manager">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-table-reference-manager-entity/>
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
@@ -49,6 +46,7 @@
         <v-tabs-window-item value="schedule-manager">
           <v-card flat>
             <v-card-text>
+              {{  _data_selected_machine }}
               <organisms-organism-table-schedule-manager-production/>
             </v-card-text>
           </v-card>
@@ -57,7 +55,6 @@
         <v-tabs-window-item value="shift-manager">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-table-reference-manager-shift/>
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
@@ -68,6 +65,8 @@
 </template>
 
 <script setup lang="ts">
+
+
 definePageMeta({
   name: 'system-administrator',
   title: 'System Administrator Dashboard',
@@ -88,5 +87,8 @@ useHead({
 
 import { ref } from 'vue';
 
+
 const tab = ref('account-manager');
+
+const { _data_all_machines, _data_selected_machine } = useEntityMachineManager();
 </script>
