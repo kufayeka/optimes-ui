@@ -10,5 +10,9 @@ export default defineNuxtConfig({
         sets: ['mdi', 'fa']
       }
     }
+  },
+  
+  imports: {
+    autoImport: true
   }
 })

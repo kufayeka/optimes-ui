@@ -95,8 +95,9 @@ export const useScheduleManager2 = (scheduleKey) => {
   const api_get_all_schedule_data = () =>
     pipe_process_api_response(
       R.pipe(
-        extract_data,
-        normalise_entries,
+        extract_data, // Mengambil array dari response "data"
+        // Normalisasi tiap entry: jika populated ada, gunakan populated, jika tidak, gunakan raw
+        R.map(item => item.populated || {}),
         set_array(_data_all_schedule_data),
         () => set_string(_data_success_msg, 'Successfully retrieved schedule data.'),
         ui_command_popup_success_open

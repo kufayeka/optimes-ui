@@ -7,6 +7,8 @@
       </div>
     </template>
 
+    <OrganismChartGanttPpicSchedule />
+
     <!-- POPUP: ERROR -->
     <molecules-molecule-popup-error :open="_state_popup_error" title="Error" autoClose="false" maxWidth="400" @close="_state_popup_error = false">
       <atoms-atom-base-wrapper width="100%" height="100px" maxHeight="400px">
@@ -113,6 +115,7 @@
 import { computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { useScheduleManager2 } from '@/composables/use-schedule-manager2';
+import OrganismChartGanttPpicSchedule from './organism-chart-gantt-ppic-schedule.vue';
 
 
 const {

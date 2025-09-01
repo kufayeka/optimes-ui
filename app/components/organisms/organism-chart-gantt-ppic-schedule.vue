@@ -1,20 +1,21 @@
 <template>
+  {{ _data_all_schedule_data  }}
   <molecules-molecule-chart-gantt-schedule 
-    :rawSchedules="_data_all_schedules"
-    @refresh="pipe_execute_refresh_schedule"
-    @selectedTask="_open_view_schedule"
+    :rawSchedules="ganttTasks"
+    @refresh="null"
+    @selectedTask="null"
   />
 
   <molecules-molecule-popup-information 
     title="Schedule View"
-    :open="_toggle_popup_schedule_view"
-    @close="_close_view_popup"
+    :open="nill"
+    @close="null"
     maxWidth="700"
   >
     <molecules-molecule-popup-content-base>
       <template #content>
         <atoms-atom-base-wrapper max-width="100%" max-height="400px">
-          <molecules-molecule-data-display-schedule :schedule-data="_data_selected_schedule" />
+          <molecules-molecule-data-display-schedule :schedule-data="_data_selected_schedule_data" />
         </atoms-atom-base-wrapper>
       </template>
       <template #actions>
@@ -24,57 +25,46 @@
 </template>
 
 <script setup lang="js">
-const {
-  // state
-  _data_all_schedules, 
-  _data_selected_schedule,
-
-  // setters
-  _set_data_selected_schedule,
-
-  // toggles
-  _toggle_popup_schedule_view,
-  _toggle_popup_schedule_edit,
-
-  // actions
-  _handle_fetch_all,
-  _close_view_popup,
-  _close_edit_popup,
-  _open_edit_popup,
-  _open_view_schedule,
-
-} = useScheduleManagerProcess()
+import { useScheduleManager2 } from '@/composables/use-schedule-manager2';
+import {transformScheduleDataForGantt} from '../transformScheduleDataForGantt'
+const ganttTasks = computed(() => transformScheduleDataForGantt(_data_all_schedule_data.value.raw));
 
 const {
-  _data_all_schedule,
-
+  _data_all_schedule_data,
+  _data_selected_schedule_data,
+  _data_modified_schedule_data,
+  _data_created_schedule_data,
+  _data_success_msg,
+  _data_error_msg,
+  
   _state_popup_error,
   _state_popup_success,
-  _state_popup_schedule_view,
-  _state_popup_schedule_edit,
-  _state_popup_schedule_create,
-  _state_popup_schedule_delete,
-  _state_popup_schedule_create_confirmation,
-  _state_popup_schedule_delete_confirmation,
-  _state_popup_schedule_edit_confirmation,
+  _state_popup_create_schedule_data,
+  _state_popup_edit_schedule_data,
+  _state_popup_confirm_edit_schedule_data,
+  _state_popup_view_schedule_data,
+  _state_popup_confirm_create_schedule_data,
+  _state_popup_confirm_delete_schedule_data,
 
-  open_popup_schedule_view,
-  close_popup_schedule_view,
-  open_popup_schedule_edit,
-  close_popup_schedule_edit,
-  open_popup_schedule_create,
-  close_popup_schedule_create,
-  open_popup_schedule_edit_confirmation,
-  close_popup_schedule_edit_confirmation,
-  open_popup_schedule_create_confirmation,
-  close_popup_schedule_create_confirmation,
-  open_popup_schedule_delete_confirmation,
-  close_popup_schedule_delete_confirmation,
+  ui_command_popup_create_schedule_data_close,
+  ui_command_popup_create_schedule_data_open,
+  ui_command_popup_edit_schedule_data_close,
+  ui_command_popup_edit_schedule_data_open,
+  ui_command_popup_confirm_edit_schedule_data_close,
+  ui_command_popup_confirm_edit_schedule_data_open,
+  ui_command_popup_view_schedule_data_close,
+  ui_command_popup_view_schedule_data_open,
+  ui_command_popup_confirm_create_schedule_data_open,
+  ui_command_popup_confirm_create_schedule_data_close,
+  ui_command_popup_confirm_delete_schedule_data_open,
+  ui_command_popup_confirm_delete_schedule_data_close,
 
-  pipe_execute_edit_schedule,
-  pipe_execute_create_schedule,
-  pipe_execute_refresh_schedule,
-  pipe_execute_delete_schedule,
+  pipe_execute_refresh_schedule_data,
+  pipe_execute_update_schedule_data,
+  pipe_execute_create_schedule_data,
+  pipe_execute_delete_schedule_data,
+} = useScheduleManager2('schedule:entity:machine:*');
 
-} = useScheduleProcess();
+
+
 </script>
