@@ -64,6 +64,7 @@
       <molecules-molecule-popup-content-base>
         <template #content>
           <atoms-atom-base-wrapper max-width="100%" max-height="400px">
+            {{ _data_all_shift }}
             <molecules-molecule-form-create-generic :form-template="create_form_template" :initial-data="create_form_initial_data" v-model:formData="_data_created_schedule" />
           </atoms-atom-base-wrapper>
         </template>
@@ -149,10 +150,10 @@ const {
 
 
 const edit_form_template = computed(() => [
-  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: _data_all_shift.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: _data_all_shift.value.title, itemTitle: 'value.title', itemValue: 'id' },
   { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true },
   { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true },
-  { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value.title, itemTitle: 'value.title', itemValue: 'id' },
   { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true },
   { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true },
   { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', required: true, max: 9999999, min: 0 },
@@ -164,10 +165,10 @@ const edit_form_template = computed(() => [
 const create_form_template = computed(() => [
   { key: 'schedule_data.work_order_number', label: 'Work Order', type: 'text', required: true },
   { key: 'schedule_data.sales_order_number', label: 'Sales Order', type: 'text', required: true },
-  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: _data_all_shift.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'schedule_data.shift', type: 'select', label: 'Shift', items: _data_all_shift.value.title, itemTitle: 'value.title', itemValue: 'id' },
   { key: 'planned_start_time', label: 'Planned Start Time', type: 'datetime', required: true, isISOString: true },
   { key: 'planned_finish_time', label: 'Planned Finish Time', type: 'datetime', required: true, isISOString: true },
-  { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value, itemTitle: 'value.title', itemValue: 'id' },
+  { key: 'schedule_data.routing', type: 'select', label: 'Machine', items: _data_all_machine.value.title, itemTitle: 'value.title', itemValue: 'id' },
   { key: 'schedule_data.quantity_order', label: 'Quantity Order', type: 'number', min: 0, max: 9999999, required: true },
   { key: 'schedule_data.quantity_unit', label: 'Quantity Unit', type: 'text', required: true },
   { key: 'notes', label: 'Notes', type: 'textarea', required: false },

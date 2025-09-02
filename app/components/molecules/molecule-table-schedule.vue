@@ -11,8 +11,8 @@
       <template v-slot:item="{ item }">
         <tr>
             <td>{{ item.id }}</td>
-            <td>{{ item.schedule_data?.shift }}</td>
-            <td>{{ item.schedule_data?.routing }}</td>
+            <td>{{ item.schedule_data?.shift_name.title }}</td>
+            <td>{{ item.schedule_data?.routing_name.title }}</td>
             <td><atoms-atom-base-chip>{{ item.schedule_data?.work_order_number }}</atoms-atom-base-chip></td>
             <td><atoms-atom-base-chip>{{ item.schedule_data?.sales_order_number }}</atoms-atom-base-chip></td>
             <td>{{ formatDateTime(item.planned_start_time) }}</td>

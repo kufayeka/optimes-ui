@@ -23,7 +23,7 @@
         <v-tabs-window-item value="schedules-manager">
           <v-card flat>
             <v-card-text>
-              <organisms-organism-table-schedule-manager-production/>  
+              <organisms-organism-table-schedule-manager-ppic/>  
             </v-card-text>
           </v-card>
         </v-tabs-window-item>
